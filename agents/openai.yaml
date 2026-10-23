@@ -1,0 +1,4 @@
+interface:
+  display_name: "Resume Builder"
+  short_description: "Build evidence-based resumes and check DOCX quality"
+  default_prompt: "Use $resume-builder to improve my resume using my source materials and latest corrections, and deliver only the format I request."
