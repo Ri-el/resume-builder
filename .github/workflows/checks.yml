@@ -18,5 +18,24 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
+      - name: Install document builder dependency
+        run: python -m pip install -r requirements.txt
       - name: Check skill resources and synthetic documents
         run: python -m unittest discover -s tests -v
+
+  render:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install renderer and explicit demonstration font
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends libreoffice-writer poppler-utils fontconfig fonts-crosextra-carlito
+          python -m pip install -r requirements.txt
+      - name: Test real export and overflow handling
+        env:
+          RESUME_RUN_RENDER_TESTS: "1"
+        run: python -m unittest discover -s tests -p test_resume_render.py -v

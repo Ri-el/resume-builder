@@ -1,4 +1,4 @@
 interface:
   display_name: "Resume Builder"
-  short_description: "Build evidence-based resumes and check DOCX quality"
-  default_prompt: "Use $resume-builder to improve my resume using my source materials and latest corrections, and deliver only the format I request."
+  short_description: "Build evidence-based resumes with a repeatable A4 layout"
+  default_prompt: "Use $resume-builder to create my resume from my evidence and latest corrections using the strict A4 profile. Deliver PDF only unless I request another format."

@@ -230,6 +230,8 @@ Use a restrained, purpose-built document rather than a graphic poster or generic
 A conventional layout is allowed because recruiters need to scan it quickly and ATS tools benefit from predictable structure. Do not imitate a fashionable template just because it is popular.
 
 ### 6.2 Default specification
+For new file generation from this repository, use the [strict A4 profile](references/strict-a4.md) unless the user requests a different format. Its exact measurements and Education-before-Experience order take precedence over the general starting points below. Read that reference before generating files. Use the [profile JSON](profiles/strict-a4.json) and [builder](scripts/build_resume.py) rather than reconstructing the formatting from memory. Preserve an existing format during bounded revisions unless a restyle is requested.
+
 Use this as a starting point, not a rigid mandate:
 - Paper: A4, 210 × 297 mm.
 - Margins: approximately 0.55 in top/bottom and 0.7 in left/right.
@@ -302,6 +304,8 @@ Keep one authoritative editable source file. When using DOCX, generate the PDF f
 
 ### 8.2 Creation
 Use a document library such as Python `python-docx` or Node.js `docx` when available. Set page size explicitly. Use paragraph/run styles, true bullet formatting, tab stops for dates, and real section rules. Avoid layout hacks that depend on repeated spaces, tabs typed by hand, or floating text boxes.
+
+For the strict profile, create approved candidate JSON following the [fictional input example](examples/candidate.json), then run `python scripts/build_resume.py private/candidate.json --output private/resume.pdf --qa-dir private/qa`. PDF is the default; request DOCX or both explicitly. Require the requested font or record an explicit substitute. If fitting returns `needs_decision`, ask about approved shortening or multiple pages. Do not delete content, shrink body text, or claim visual review from rendered image counts. Follow the reference's output report and inspect every final page image.
 
 ### 8.3 Export and inspect
 If the whole repository and Python 3.10+ are available, optionally run the bundled [DOCX preflight](scripts/check_docx.py) before export:
