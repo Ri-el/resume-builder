@@ -133,6 +133,18 @@ class LayoutTests(unittest.TestCase):
         for name in ("Resume Name", "Resume Headline", "Resume Contact", "Resume Heading", "Resume Entry"):
             self.assertEqual(self.document.styles[name].paragraph_format.alignment, WD_ALIGN_PARAGRAPH.LEFT)
 
+    def test_explicit_line_height_keeps_content_and_font_sizes(self):
+        expected = [paragraph.text for paragraph in self.document.paragraphs]
+        profile = {**self.profile, "line_height_factor": 1.22}
+        layout = build_document(sample(), self.path, "Calibri", self.stage, profile)
+        document = Document(self.path)
+        self.assertEqual([paragraph.text for paragraph in document.paragraphs], expected)
+        self.assertEqual(document.styles["Resume Body"].font.size.pt, 10)
+        self.assertEqual(document.styles["Resume Name"].font.size.pt, 16)
+        self.assertAlmostEqual(document.styles["Resume Body"].paragraph_format.line_spacing.pt, 12.2, delta=.025)
+        self.assertAlmostEqual(document.styles["Resume Name"].paragraph_format.line_spacing.pt, 16 * 1.22, delta=.025)
+        self.assertEqual(layout["line_height_factor"], 1.22)
+
     def test_date_tab_matches_current_text_width_and_moves_with_margins(self):
         for stage in fitting_stages(self.profile):
             build_document(sample(), self.path, "Calibri", stage)
@@ -197,6 +209,11 @@ class LayoutTests(unittest.TestCase):
 
 
 class ExportTests(unittest.TestCase):
+    def test_invalid_line_height_cannot_publish_a_file(self):
+        for value in (0, -1, .9, 3.1, float('nan'), float('inf')):
+            with self.subTest(value=value), self.assertRaises(builder.BuildError):
+                builder.build(Path("candidate.json"), Path("sample.pdf"), line_height_factor=value)
+
     def test_missing_calibri_cannot_silently_substitute(self):
         with patch.object(builder, "command", return_value="DejaVu Sans"):
             with self.assertRaises(builder.BuildError):

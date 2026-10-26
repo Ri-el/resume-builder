@@ -4,6 +4,7 @@
 import argparse
 import collections
 import json
+import math
 import os
 import re
 import shutil
@@ -240,7 +241,7 @@ def inspect_text(pdf, candidate, headings, tools):
 
 def create_previews(pdf, directory, pages, tools):
     directory.mkdir()
-    command([tools["pdftoppm"], "-png", "-r", "120", pdf, directory / "page"])
+    command([tools["pdftoppm"], "-png", "-r", "150", pdf, directory / "page"])
     images = sorted(directory.glob("page-*.png"))
     if len(images) != pages or any(not item.stat().st_size for item in images):
         raise BuildError("Rendering did not produce an image for every PDF page.")
@@ -258,8 +259,12 @@ def atomic_copy(source, destination):
             os.unlink(temporary)
 
 
-def build(candidate_path, output, *, family=None, also_docx=False, allow_multiple_pages=False, qa_dir=None, overwrite=False):
+def build(candidate_path, output, *, family=None, also_docx=False, allow_multiple_pages=False, qa_dir=None, overwrite=False, line_height_factor=None):
     profile = load_profile()
+    if line_height_factor is not None:
+        if not math.isfinite(line_height_factor) or not 1 <= line_height_factor <= 3:
+            raise BuildError("Line-height factor must be a finite number between 1 and 3.")
+        profile["line_height_factor"] = line_height_factor
     family = family or profile["font"]
     if not family.strip() or any(ord(char) < 32 for char in family):
         raise BuildError("Font family must be a non-empty name without control characters.")
@@ -327,6 +332,7 @@ def main(argv=None):
     parser.add_argument("candidate", type=Path, help="Approved candidate JSON; see examples/candidate.json")
     parser.add_argument("--output", type=Path, default=Path("private/resume.pdf"))
     parser.add_argument("--font", help="Explicit installed substitute for Calibri; recorded in the report")
+    parser.add_argument("--line-height-factor", type=float, help="Explicit line height as a multiple of each paragraph's font size; recorded in the report")
     parser.add_argument("--also-docx", action="store_true", help="Also publish the editable DOCX beside the requested PDF")
     parser.add_argument("--allow-multiple-pages", action="store_true", help="Explicitly permit more than one page after fitting attempts")
     parser.add_argument("--qa-dir", type=Path, help="Retain every page image, extracted text, and font report in a fresh directory")
@@ -336,6 +342,7 @@ def main(argv=None):
         report = build(
             args.candidate, args.output, family=args.font, also_docx=args.also_docx,
             allow_multiple_pages=args.allow_multiple_pages, qa_dir=args.qa_dir, overwrite=args.overwrite,
+            line_height_factor=args.line_height_factor,
         )
         exit_code = 0
     except OverflowError as error:

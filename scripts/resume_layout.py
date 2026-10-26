@@ -111,7 +111,8 @@ def build_document(candidate, destination, family, stage, profile=None):
     language = OxmlElement("w:lang")
     language.set(qn("w:val"), "en-GB")
     normal._element.get_or_add_rPr().append(language)
-    normal.paragraph_format.line_spacing = 1
+    line_height_factor = profile.get("line_height_factor")
+    normal.paragraph_format.line_spacing = Pt(points["body"] * line_height_factor) if line_height_factor is not None else 1
     normal.paragraph_format.space_before = Pt(0)
     normal.paragraph_format.space_after = Pt(0)
     normal.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
@@ -126,6 +127,8 @@ def build_document(candidate, destination, family, stage, profile=None):
         set_font(value, family, size, colour, bold, italic)
         value.paragraph_format.alignment = alignment
         value.paragraph_format.keep_together = True
+        if line_height_factor is not None:
+            value.paragraph_format.line_spacing = Pt(size * line_height_factor)
         return value
 
     style("Resume Name", points["name"], bold=True)
@@ -216,6 +219,7 @@ def build_document(candidate, destination, family, stage, profile=None):
     document.save(destination)
     return {
         "spacing_factor": stage.spacing,
+        "line_height_factor": line_height_factor,
         "margins_inches": stage.margins,
         "date_tab_inches": round(text_width / Inches(1), 6),
         "sections": included_sections,
