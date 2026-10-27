@@ -2,7 +2,7 @@
 
 An evidence-first skill for drafting, tailoring, translating, and auditing resumes. It pairs a restrained single-column A4 design with factual, content, and file-quality checks.
 
-This repository combines an assistant writing workflow with an optional document generator. The assistant reviews evidence and prepares approved wording; the generator applies a repeatable layout. Text-only work needs no document tools.
+The assistant prepares the facts and wording, then fills the unchanged Node generator supplied by the user from Claude. The renderer controls the appearance and DOCX-to-PDF process. Text-only work needs no document tools.
 
 ## Use
 
@@ -14,7 +14,40 @@ Suggested prompt:
 
 For assistants that load skill folders, use the whole repository so the optional checker and UI metadata remain available. Reading a URL does not install a skill or grant access to private candidate documents.
 
-## Generate the strict A4 layout
+## Use the supplied Claude generation method
+
+Read [content preparation](references/content-preparation.md) for how to extract evidence, write truthful content and put it into the generator's native fields. Read [generation and verification](references/claude-generation.md) before creating files. The [input contract](vendor/claude-resume-generator/docs/INPUT_FORMAT.md) describes the supported section types, including additional experience and professional development.
+
+The [Node generator](vendor/claude-resume-generator/generate.js), [style settings](vendor/claude-resume-generator/config/style.json) and supplied helpers are copied unchanged from the user's package. [UPSTREAM.json](vendor/claude-resume-generator/UPSTREAM.json) records their hashes. Its [reconstruction notes](vendor/claude-resume-generator/docs/RECONSTRUCTION_NOTES.md) distinguish the recovered Node helpers, later wrapper, reconstructed Python port and fitting extensions. No private approved resume is included.
+
+Requirements: Node with `docx` 9.6.1, Python with Pillow, LibreOffice, Poppler and the reference fonts. Use the exact dependency already supplied by your runtime, or install the lockfile:
+
+```bash
+npm ci --prefix vendor/claude-resume-generator
+python -m pip install -r vendor/claude-resume-generator/requirements.txt
+python vendor/claude-resume-generator/scripts/build.py --engine node \
+  --input vendor/claude-resume-generator/input/sample_resume.json \
+  --name Sample_Resume --outdir private/claude-selftest
+python vendor/claude-resume-generator/scripts/compare_pdfs.py \
+  vendor/claude-resume-generator/output/Sample_Resume.pdf \
+  private/claude-selftest/Sample_Resume.pdf
+```
+
+Use a fresh output directory. Measure reproduction before using candidate content: the source environment used LibreOffice 24.2.7.2, Carlito 1.104 and Liberation Serif 2.1.5 for bullets. The DOCX requests Calibri, but the reference PDF embeds Carlito. Fluent Calibri and older Carlito releases change the result. Do not alter the style to compensate for different fonts or converters.
+
+After preparing approved input:
+
+```bash
+python vendor/claude-resume-generator/scripts/build.py --engine node \
+  --input private/candidate.json --name Candidate_Resume \
+  --outdir private/candidate-export
+```
+
+Deliver PDF only by default. The internal DOCX, JSON and QA images are not extra deliverables. Inspect every page and compare all supplied fields with plain/layout/raw extraction; the bundled inspector checks only part of the content and does not establish visual quality or a universal ATS pass. Never deliver files left behind by a failed build. Content cuts, new layout decisions and alternative engines require the user's instruction.
+
+## Legacy strict A4 generator
+
+This earlier Python renderer remains available when explicitly requested. It is not the supplied Claude method and is no longer the default for the established format.
 
 The [strict profile](profiles/strict-a4.json) implements the specified single-column A4 format: Education before Experience, justified 10 pt body text, 9.5 pt headline/contact/date exceptions, right-aligned dates, real round bullets, and black/grey typography. The [full specification and input contract](references/strict-a4.md) explain the resolved rules.
 
@@ -69,6 +102,8 @@ python -m unittest discover -s tests -v
 ```
 
 [GitHub Actions](.github/workflows/checks.yml) runs the suite on Python 3.10, 3.12, and 3.13. A separate job runs real LibreOffice/Poppler export and overflow tests with Carlito. It also validates skill metadata and local resource links. All tests use fictional data and temporary directories.
+
+The supplied Claude generator has its own Ubuntu 24.04/Node 22 job. It verifies the unchanged source snapshot, compares five generated DOCX XML parts with the supplied reference, and checks PDF text, word positions and pixel differences. Enable it locally with `RESUME_RUN_CLAUDE_TESTS=1 python -m unittest discover -s tests -p test_claude_render.py -v` in the reference font/converter environment. A failed reproduction check is a reason to inspect the environment, not to rewrite the template.
 
 To enable the real renderer tests locally with the required tools and Carlito installed:
 

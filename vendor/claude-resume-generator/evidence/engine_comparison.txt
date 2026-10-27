@@ -1,0 +1,21 @@
+Node engine vs Python engine, same input, same style.json, plain LibreOffice conversion
+(pass bar used in this package: text identical, max word shift < 0.1 pt, < 1% differing pixels)
+
+-- Sample_Resume
+pages: 1 vs 1
+text identical: True
+max word shift (pt): 0.0
+differing pixels: 0 of 967590 = 0.000%
+
+-- Sample_Resume_Photo
+pages: 1 vs 1
+text identical: True
+max word shift (pt): 0.0
+differing pixels: 0 of 967590 = 0.000%
+
+-- Sample_Dense
+pages: 1 vs 1
+text identical: True
+max word shift (pt): 0.0
+differing pixels: 0 of 967590 = 0.000%
+

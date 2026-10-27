@@ -39,3 +39,38 @@ jobs:
         env:
           RESUME_RUN_RENDER_TESTS: "1"
         run: python -m unittest discover -s tests -p test_resume_render.py -v
+
+  claude-render:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install the supplied generator dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends libreoffice-writer poppler-utils fonts-crosextra-carlito fonts-liberation
+          npm ci --prefix vendor/claude-resume-generator
+          python -m pip install -r vendor/claude-resume-generator/requirements.txt
+      - name: Reproduce the supplied fictional reference
+        env:
+          RESUME_RUN_CLAUDE_TESTS: "1"
+        run: python -m unittest discover -s tests -p test_claude_render.py -v
+      - name: Build the fictional verification preview
+        run: |
+          python vendor/claude-resume-generator/scripts/build.py --engine node --input vendor/claude-resume-generator/input/sample_resume.json --name Sample_Resume --outdir private/claude-ci-preview
+          python vendor/claude-resume-generator/scripts/compare_pdfs.py vendor/claude-resume-generator/output/Sample_Resume.pdf private/claude-ci-preview/Sample_Resume.pdf > private/claude-ci-preview/comparison.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: claude-method-verification
+          path: |
+            private/claude-ci-preview/Sample_Resume.pdf
+            private/claude-ci-preview/Sample_Resume.docx
+            private/claude-ci-preview/Sample_Resume.style_used.json
+            private/claude-ci-preview/Sample_Resume.inspection.txt
+            private/claude-ci-preview/comparison.txt
+          retention-days: 7

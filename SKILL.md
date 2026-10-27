@@ -1,6 +1,6 @@
 ---
 name: resume-builder
-description: Create, revise, translate, tailor, format, or audit resumes and CVs using candidate evidence, restrained ATS-readable design, and factual, content, and file-quality checks. Use for text-only resume work as well as DOCX/PDF deliverables and job-description comparisons.
+description: Prepare truthful resume content and place it into the supplied Claude Node generator without redesigning its PDF layout. Use for drafting, bounded revisions, tailoring, translation, resume audits, and DOCX/PDF generation with factual, content, and rendered-output checks.
 ---
 
 # Resume Builder Skill
@@ -26,11 +26,11 @@ This skill is both a production method and a review filter. It does not authoriz
 
 1. Identify the task: draft, revise, tailor, translate, or audit. Record the requested language, output format, target role, and any approved style constraints.
 2. Read the supplied evidence and latest corrections. Build the fact ledger in section 2; ask only about gaps that materially block the task. Omit optional unknowns and proceed.
-3. Draft or edit using sections 3–7. For an audit, report findings using section 11 rather than rewriting unrequested content.
+3. Prepare the content using [the content handoff guide](references/content-preparation.md) and sections 3–7. For an audit, report findings using section 11 rather than rewriting unrequested content.
 4. Apply Gates A and B to every task. Apply Gate C to file deliverables; mark unavailable checks as **not checked** and irrelevant checks as **not applicable**, never as passed.
 5. Deliver only the requested output with a short, accurate check-status note.
 
-For text-only requests, write the requested text without creating DOCX/PDF files. For file requests, use section 8 and inspect the actual final exports. For related cover letters or profiles, adapt only the relevant principles.
+For text-only requests, write the requested text without creating DOCX/PDF files. For file requests, use the [supplied Claude Node workflow](references/claude-generation.md) and inspect the actual final exports. Keep its renderer and style unchanged; the assistant's added responsibility is facts, wording, selection and field placement. For related cover letters or profiles, adapt only the relevant principles.
 
 ## 2. Source hierarchy and fact ledger
 
@@ -230,7 +230,7 @@ Use a restrained, purpose-built document rather than a graphic poster or generic
 A conventional layout is allowed because recruiters need to scan it quickly and ATS tools benefit from predictable structure. Do not imitate a fashionable template just because it is popular.
 
 ### 6.2 Default specification
-For new file generation from this repository, use the [strict A4 profile](references/strict-a4.md) unless the user requests a different format. Its exact measurements and Education-before-Experience order take precedence over the general starting points below. Read that reference before generating files. Use the [profile JSON](profiles/strict-a4.json) and [builder](scripts/build_resume.py) rather than reconstructing the formatting from memory. Preserve an existing format during bounded revisions unless a restyle is requested.
+For the established format, use the [supplied Claude generator](references/claude-generation.md) and its unchanged [style JSON](vendor/claude-resume-generator/config/style.json). Its measurements, 6.9-inch date tab, paragraph gaps and actual Carlito font version take precedence over general suggestions below. Read that generation guide and the native input contract before building. Self-test against the shipped fictional baseline, not an unrelated sample. Preserve an existing format during bounded revisions unless a restyle is requested. Use the earlier [strict A4 profile](references/strict-a4.md) only when explicitly requested; it is a different renderer.
 
 Use this as a starting point, not a rigid mandate:
 - Paper: A4, 210 × 297 mm.
@@ -305,7 +305,7 @@ Keep one authoritative editable source file. When using DOCX, generate the PDF f
 ### 8.2 Creation
 Use a document library such as Python `python-docx` or Node.js `docx` when available. Set page size explicitly. Use paragraph/run styles, true bullet formatting, tab stops for dates, and real section rules. Avoid layout hacks that depend on repeated spaces, tabs typed by hand, or floating text boxes.
 
-For the strict profile, create approved candidate JSON following the [fictional input example](examples/candidate.json), then run `python scripts/build_resume.py private/candidate.json --output private/resume.pdf --qa-dir private/qa`. PDF is the default; request DOCX or both explicitly. Require the requested font or record an explicit substitute. If fitting returns `needs_decision`, ask about approved shortening or multiple pages. Do not delete content, shrink body text, or claim visual review from rendered image counts. Follow the reference's output report and inspect every final page image.
+For the established format, prepare native JSON using [content-preparation.md](references/content-preparation.md), then run `python vendor/claude-resume-generator/scripts/build.py --engine node --input private/candidate.json --name Candidate_Resume --outdir private/candidate-export`. Use a fresh output directory and retain the unchanged Node method. Deliver PDF only unless another format was requested. Inspect every final page and compare every supplied field with extracted text; the upstream inspector is partial. Stop on build failure or exhausted fitting. Never delete content or shrink fonts automatically. The reconstructed Python port and the older strict-profile builder are alternatives only when explicitly chosen and disclosed.
 
 ### 8.3 Export and inspect
 If the whole repository and Python 3.10+ are available, optionally run the bundled [DOCX preflight](scripts/check_docx.py) before export:

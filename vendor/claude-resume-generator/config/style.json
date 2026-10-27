@@ -1,0 +1,71 @@
+{
+  "_comment": "Approved house style. Values in points/inches. generate.js converts pt to half-points (x2) and twips (x20) exactly as the approved script did. Do not edit to 'improve' the look.",
+  "page": {
+    "size": "A4",
+    "margin_top_in": 0.55,
+    "margin_bottom_in": 0.55,
+    "margin_left_in": 0.7,
+    "margin_right_in": 0.7
+  },
+  "font_requested": "Calibri",
+  "color": {
+    "text": "000000",
+    "muted": "595959"
+  },
+  "size_pt": {
+    "name": 16,
+    "headline": 9.5,
+    "contact": 9.5,
+    "section_heading": 10.5,
+    "entry_title": 10,
+    "entry_date": 9.5,
+    "subline": 10,
+    "body": 10
+  },
+  "spacing_pt": {
+    "name_after": 2,
+    "headline_after": 2,
+    "contact_after": 2,
+    "section_before": 7,
+    "section_after": 3,
+    "summary_after": 4,
+    "entry_after": 0.25,
+    "subline_after": 2,
+    "bullet_after": 1.8,
+    "skill_after": 1.6,
+    "inline_list_after": 0
+  },
+  "rule": {
+    "size_eighth_pt": 6,
+    "space_pt": 2
+  },
+  "bullet": {
+    "char": "•",
+    "left_in": 0.22,
+    "hanging_in": 0.18
+  },
+  "tab_stop_in": 6.9,
+  "justify": {
+    "summary": true,
+    "bullets": true,
+    "subline": true,
+    "skills": true
+  },
+  "separators": {
+    "headline": "  |  ",
+    "contact": "  ·  ",
+    "skill_items": " · ",
+    "inline_list": "  ·  "
+  },
+  "photo": {
+    "width_px": 96,
+    "height_px": 115,
+    "contact_after_pt_when_photo": 26,
+    "crop_ratio": "5:6",
+    "master_px": [
+      600,
+      720
+    ],
+    "contact_split_at": 2
+  }
+}

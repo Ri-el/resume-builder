@@ -1,5 +1,6 @@
 __pycache__/
 *.py[cod]
 .venv/
+node_modules/
 # Keep private candidate inputs, generated documents, and reports here.
 /private/
