@@ -1,0 +1,75 @@
+{
+ "name": "FULL NAME",
+ "headline": [
+  "Role or lane 1",
+  "Role or lane 2",
+  "Role or lane 3"
+ ],
+ "contact": [
+  "City, State",
+  "+00 00-000 0000",
+  "email@example.com",
+  "linkedin.com/in/handle"
+ ],
+ "sections": [
+  {
+   "heading": "Summary",
+   "type": "paragraph",
+   "text": "Two to three sentences."
+  },
+  {
+   "heading": "Education",
+   "type": "entries",
+   "items": [
+    {
+     "title": "Degree, Institution",
+     "dates": "Mon YYYY – Mon YYYY",
+     "sub": "CGPA 0.00 (optional line)"
+    }
+   ]
+  },
+  {
+   "heading": "Experience",
+   "type": "entries",
+   "items": [
+    {
+     "title": "Job Title",
+     "dates": "Mon YYYY – Present",
+     "sub": "Company, City, Country",
+     "bullets": [
+      "Action + scope + purpose."
+     ]
+    }
+   ]
+  },
+  {
+   "heading": "Skills",
+   "type": "skills",
+   "items": [
+    {
+     "label": "Category",
+     "items": [
+      "Skill",
+      "Skill",
+      "Skill"
+     ]
+    }
+   ]
+  },
+  {
+   "heading": "Achievements",
+   "type": "bullets",
+   "items": [
+    "Award or result, year."
+   ]
+  },
+  {
+   "heading": "Languages",
+   "type": "inline_list",
+   "items": [
+    "Language (Level)",
+    "Language (Level)"
+   ]
+  }
+ ]
+}

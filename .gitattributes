@@ -1,0 +1,2 @@
+# Preserve the supplied generator byte for byte, including its existing whitespace.
+vendor/claude-resume-generator/** -whitespace

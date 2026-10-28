@@ -1,0 +1,121 @@
+{
+ "_comment": "FICTIONAL sample. Every name, number, employer and email is invented.",
+ "name": "Aisyah Rahman",
+ "headline": [
+  "Operations Analysis",
+  "Client Coordination",
+  "Reporting & Documentation"
+ ],
+ "contact": [
+  "Petaling Jaya, Selangor",
+  "+60 12-345 6789",
+  "aisyah.rahman@example.com",
+  "linkedin.com/in/aisyah-example"
+ ],
+ "sections": [
+  {
+   "heading": "Summary",
+   "type": "paragraph",
+   "text": "Business graduate with hands-on experience in client coordination, data cleaning and weekly reporting across finance and training environments. Works with internal teams and external partners to turn requests into clear documents and on-time deliverables. Combines a Business Administration degree with practical spreadsheet and reporting skills."
+  },
+  {
+   "heading": "Education",
+   "type": "entries",
+   "items": [
+    {
+     "title": "Bachelor of Business Administration (Hons), Sample University",
+     "dates": "Mar 2023 – Jul 2026",
+     "sub": "CGPA 3.60"
+    },
+    {
+     "title": "Diploma in Business Studies, Sample Polytechnic",
+     "dates": "Jun 2020 – Dec 2022"
+    }
+   ]
+  },
+  {
+   "heading": "Experience",
+   "type": "entries",
+   "items": [
+    {
+     "title": "Operations Associate",
+     "dates": "Aug 2026 – Present",
+     "sub": "Harbour Lane Leasing Sdn. Bhd., Kuala Lumpur, Malaysia",
+     "bullets": [
+      "Collect client requirements and supporting documents, then prepare summary notes for internal review and approval.",
+      "Check company records and published information to support screening decisions on prospective accounts.",
+      "Coordinate with the legal, finance and operations teams to move approved requests through to execution.",
+      "Track open items on a shared sheet and follow up with owners before each weekly review.",
+      "Prepare a short weekly status note for the operations manager covering open items, blockers and next steps."
+     ]
+    },
+    {
+     "title": "Administrative Intern",
+     "dates": "Mar 2026 – Jul 2026",
+     "sub": "Example Training Centre Sdn. Bhd., Shah Alam, Selangor",
+     "bullets": [
+      "Cleaned and merged a 5,000+ row participant list from three sources, reducing duplicate records before a mailing.",
+      "Answered 60+ weekly enquiries by email and phone, giving bilingual BM/EN replies and routing requests to the right officer.",
+      "Reported broken links found on the centre's registration page to the web team and checked the fix.",
+      "Prepared attendance sheets and certificates for two training batches each month."
+     ]
+    },
+    {
+     "title": "Customer Service Assistant (Part-Time)",
+     "dates": "Jan 2024 – Dec 2025",
+     "sub": "Sample Cafe, Petaling Jaya, Selangor",
+     "bullets": [
+      "Handled orders and payments accurately during peak hours and resolved customer concerns on the spot."
+     ]
+    }
+   ]
+  },
+  {
+   "heading": "Skills",
+   "type": "skills",
+   "items": [
+    {
+     "label": "Analysis & Reporting",
+     "items": [
+      "Data Cleaning",
+      "Weekly Reporting",
+      "Requirements Notes",
+      "Record Checking"
+     ]
+    },
+    {
+     "label": "Coordination",
+     "items": [
+      "Client Coordination",
+      "Cross-Team Follow-Up",
+      "Document Preparation"
+     ]
+    },
+    {
+     "label": "Tools",
+     "items": [
+      "Microsoft Excel",
+      "Microsoft PowerPoint",
+      "Canva"
+     ]
+    }
+   ]
+  },
+  {
+   "heading": "Achievements",
+   "type": "bullets",
+   "items": [
+    "Dean's List, Sample University, 2025.",
+    "Runner-Up, Faculty Case Study Competition, 2025."
+   ]
+  },
+  {
+   "heading": "Languages",
+   "type": "inline_list",
+   "items": [
+    "Bahasa Melayu (Native)",
+    "English (Fluent)"
+   ]
+  }
+ ]
+}

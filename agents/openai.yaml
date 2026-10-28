@@ -1,0 +1,4 @@
+interface:
+  display_name: "Resume Builder"
+  short_description: "Use Claude's resume renderer or stop if checks fail"
+  default_prompt: "Use $resume-builder to prepare my resume from my evidence and latest corrections, then run scripts/build_verified_resume.py. Preserve Claude's renderer, stop if the reference checks fail, inspect every final page, and deliver PDF only."

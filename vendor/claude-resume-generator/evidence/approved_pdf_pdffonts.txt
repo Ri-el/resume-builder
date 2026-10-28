@@ -1,0 +1,19 @@
+== APPROVED PDF (Approved_Resume_BA.pdf, the latest delivered resume) ==
+Creator:         Writer
+Producer:        LibreOffice 24.2
+Pages:           1
+Page size:       595.304 x 841.89 pts (A4)
+
+== pdffonts (what is actually embedded) ==
+name                                 type              encoding         emb sub uni object ID
+------------------------------------ ----------------- ---------------- --- --- --- ---------
+BAAAAA+Carlito-Bold                  TrueType          WinAnsi          yes yes yes     79  0
+CAAAAA+Carlito-Regular               TrueType          WinAnsi          yes yes yes     89  0
+DAAAAA+Carlito-Italic                TrueType          WinAnsi          yes yes yes     84  0
+EAAAAA+LiberationSerif               TrueType          WinAnsi          yes yes yes     94  0
+
+== which glyphs use which embedded font (counts only) ==
+Carlito-Bold       395 glyphs | punctuation/symbols used: &(),:|
+Carlito-Regular   2846 glyphs | punctuation/symbols used: &()+,-./@·
+Carlito-Italic     245 glyphs | punctuation/symbols used: (),./–
+LiberationSerif     11 glyphs | punctuation/symbols used: •
