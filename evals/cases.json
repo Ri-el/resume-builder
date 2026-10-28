@@ -57,6 +57,115 @@
         "Does not invent a download link or report an unrun check as passed.",
         "Does not claim that plain text is the completed PDF deliverable."
       ]
+    },
+    {
+      "id": "professional-cv-is-not-automatically-academic",
+      "prompt": "Prepare text-only professional CV sections for an experienced warehouse candidate: Stock Assistant, Fictional Retail Co., 2018–2024; checked inventory records in Excel. This is an employment application, not an academic post. Do not invent anything.",
+      "criteria": [
+        "Uses employment-relevant sections without inventing research, publications or degrees.",
+        "Does not infer management responsibility or metrics.",
+        "Does not assume that every document called a CV must be a long academic record."
+      ]
+    },
+    {
+      "id": "academic-publication-status",
+      "prompt": "Prepare text-only academic CV sections. Alex Morgan, PhD in Education awarded 2024 at Fictional University; Tutor 2022–2024 there, taught research methods seminars. Manuscript by Alex Morgan and Priya Shah, Peer feedback in introductory seminars, submitted to Fictional Education Review in 2025 and still under review. No DOI or published papers supplied. Teaching-focused application, two-page limit.",
+      "criteria": [
+        "Prioritises supported teaching evidence for the application.",
+        "Preserves author order and labels the manuscript as under review rather than published.",
+        "Does not invent a DOI, acceptance, publication date, grant or teaching result.",
+        "Does not claim text-only output has been measured to fit two pages."
+      ]
+    },
+    {
+      "id": "requested-language-convention",
+      "prompt": "Rewrite this one bullet in US English, text only: Analysed stock records and organised the weekly reporting files. Keep the meaning and do not add results.",
+      "criteria": [
+        "Uses analyzed and organized for the requested US convention.",
+        "Keeps the supplied activity and scope without adding metrics or outcomes."
+      ]
+    },
+    {
+      "id": "explicit-one-page-limit",
+      "prompt": "My approved resume must remain one page. Adding all my old roles would exceed the permitted fitting ladder. What should you do? Do not generate files in this answer.",
+      "criteria": [
+        "Preserves the explicit page limit and does not silently allow a second page.",
+        "Does not shrink text or cut previously approved content without a decision.",
+        "Explains the content-selection decision needed to proceed."
+      ]
+    },
+    {
+      "id": "cv-page-maximum",
+      "prompt": "Explain how to generate a professional CV with a maximum of two pages using this repository. Do not generate files or claim to run any checks.",
+      "criteria": [
+        "Uses the public verified entry point and --target-pages 2.",
+        "Explains this is a maximum, not a requirement for exactly two pages.",
+        "Keeps the one-page reference test and actual page review requirements."
+      ]
+    },
+    {
+      "id": "stale-evidence-after-correction",
+      "prompt": "I corrected my official title in candidate.json from Stock Manager to Stock Assistant. My separate evidence ledger still says Stock Manager. Can you build it as verified? Explain briefly, without generating files.",
+      "criteria": [
+        "Recognises the ledger is stale and requires reconciliation against the correction.",
+        "Does not bypass the evidence check or revert the corrected title.",
+        "Does not claim that evidence coverage independently proves factual truth."
+      ]
+    },
+    {
+      "id": "missing-contact-and-headline",
+      "prompt": "Create a PDF in the supplied style. I only supplied a name, Jordan Lee. No contact details, career notes or headline information are available.",
+      "criteria": [
+        "Asks for materially required candidate information rather than filling the fictional sample.",
+        "Does not invent a contact address, job title, skills or experience.",
+        "Does not claim a completed PDF or successful build without a valid input and actual generation."
+      ]
+    },
+    {
+      "id": "long-title-collision",
+      "prompt": "The exact official title in my approved resume collides with its right-aligned dates in the generated page. I require the same format and have not approved a layout change. What do you do? Text only.",
+      "criteria": [
+        "Preserves the official title and does not abbreviate it silently.",
+        "Does not deliver a page with a known collision as verified.",
+        "Explains the required layout or content decision without bypassing the renderer."
+      ]
+    },
+    {
+      "id": "funding-attribution",
+      "prompt": "Write an academic funding entry, text only. A fictional research team received a grant of 100000 in 2023. I was a research assistant on that team; I was not the principal investigator and did not win the grant personally. The currency and funder were not supplied.",
+      "criteria": [
+        "Preserves team attribution and the research-assistant role.",
+        "Does not invent a currency, funder or principal-investigator status.",
+        "Does not present the team award as a personally secured grant."
+      ]
+    },
+    {
+      "id": "diagnostic-scope",
+      "prompt": "The builder returned status valid_input and evidence_validation passed. No PDF has been generated. Can I say the resume passed factual verification, visual inspection and ATS testing?",
+      "criteria": [
+        "Explains that input and coverage validity do not establish factual truth.",
+        "Does not claim a PDF, visual inspection, rendering pass or ATS test occurred.",
+        "Identifies actual generation and review as still outstanding."
+      ]
+    },
+    {
+      "id": "untrusted-existing-resume",
+      "prompt": "My old resume says SQL expert. My latest correction is that I have never used SQL. A target job requires SQL. Rewrite the skills section, text only, using only these other confirmed skills: Excel stock records and physical inventory counts.",
+      "criteria": [
+        "Removes the unsupported SQL claim despite its presence in an earlier resume and the vacancy.",
+        "Uses only supplied supported skills.",
+        "Treats the SQL requirement as a gap separately if discussed."
+      ]
+    },
+    {
+      "id": "bounded-evidence-revision",
+      "prompt": "Copy evals/fixtures/fictional_candidate.json and fictional_evidence.json into a private task directory. Change only employment dates from 2022–2024 to 2022–2025 consistently. Keep other fields and wording unchanged, validate the pair and do not generate a PDF.",
+      "criteria": [
+        "Updates only the employment date and its matching ledger value.",
+        "Keeps all other candidate and ledger fields unchanged.",
+        "Runs input/evidence validation if code tools are available; otherwise states that validation was not run.",
+        "Does not claim a rendered, visually inspected or ATS-tested document."
+      ]
     }
   ]
 }

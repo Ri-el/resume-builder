@@ -1,4 +1,4 @@
 interface:
   display_name: "Resume Builder"
-  short_description: "Create A4 resumes with verified PDF output"
-  default_prompt: "Use $resume-builder to prepare my resume from my evidence and latest corrections, run the verified generator, inspect every page and deliver PDF only."
+  short_description: "Prepare resumes and CVs with checked PDF output"
+  default_prompt: "Use $resume-builder to establish my resume or CV requirements, prepare content from my evidence and latest corrections, validate claim coverage, run the verified generator within my page limit, inspect every page and deliver PDF unless I request another supported format."

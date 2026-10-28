@@ -98,6 +98,73 @@ def input_fragments(resume):
     return fragments
 
 
+def claim_fields(value, path=""):
+    """Return candidate text by JSON Pointer, excluding editorial field labels."""
+    if isinstance(value, dict):
+        for key, item in value.items():
+            if key not in {"_comment", "heading", "type", "label"}:
+                escaped = key.replace("~", "~0").replace("/", "~1")
+                yield from claim_fields(item, path + "/" + escaped)
+    elif isinstance(value, list):
+        for index, item in enumerate(value):
+            yield from claim_fields(item, path + "/" + str(index))
+    elif isinstance(value, str):
+        yield path, value
+
+
+def check_evidence(resume, ledger):
+    """Check claim coverage and stale values, not the truth of source documents."""
+    def obj(value, required, optional=()):
+        if not isinstance(value, dict) or set(required) - value.keys() or value.keys() - set(required) - set(optional):
+            raise Blocked("Evidence has missing or unsupported fields; use docs/EVIDENCE_FORMAT.md")
+
+    def nonempty(value):
+        return isinstance(value, str) and bool(value.strip())
+
+    obj(ledger, ("schema_version", "sources", "claims"))
+    if type(ledger["schema_version"]) is not int or ledger["schema_version"] != 1:
+        raise Blocked("Unsupported evidence schema_version")
+    if not isinstance(ledger["sources"], list) or not ledger["sources"]:
+        raise Blocked("Evidence requires a non-empty sources list")
+    sources = set()
+    for source in ledger["sources"]:
+        obj(source, ("id", "kind", "label"))
+        source_id = source["id"]
+        if not isinstance(source_id, str) or not re.fullmatch(r"[a-z0-9][a-z0-9._-]{0,63}", source_id) or source_id in sources:
+            raise Blocked("Evidence source IDs must be unique lowercase identifiers")
+        if source["kind"] not in ("candidate_notes", "document", "correction") or not nonempty(source["label"]):
+            raise Blocked("Evidence source kind or label is invalid")
+        sources.add(source_id)
+    if not isinstance(ledger["claims"], list):
+        raise Blocked("Evidence claims must be a list")
+    expected = dict(claim_fields(resume))
+    covered = set()
+    for claim in ledger["claims"]:
+        obj(claim, ("path", "value", "source_ids", "status"), ("note",))
+        pointer = claim["path"]
+        if not isinstance(pointer, str) or pointer not in expected or pointer in covered:
+            raise Blocked("Evidence claim path is unsupported or duplicated")
+        if claim["value"] != expected[pointer]:
+            raise Blocked("Evidence value is stale or does not match input at " + pointer)
+        refs = claim["source_ids"]
+        if not isinstance(refs, list) or not refs or any(not isinstance(ref, str) or ref not in sources for ref in refs) or len(refs) != len(set(refs)):
+            raise Blocked("Evidence claim must reference known, unique source IDs at " + pointer)
+        if claim["status"] not in ("confirmed", "candidate_reported"):
+            raise Blocked("Unresolved or unsupported evidence status at " + pointer)
+        if "note" in claim and not nonempty(claim["note"]):
+            raise Blocked("Evidence note must be non-empty text at " + pointer)
+        covered.add(pointer)
+    missing = expected.keys() - covered
+    if missing:
+        raise Blocked("Evidence is missing candidate text at " + sorted(missing)[0])
+    return {"status": "passed", "claims": len(covered), "sources": len(sources),
+            "scope": "Source references and matching input values only; factual truth requires review"}
+
+
+def read_json(path):
+    return json.loads(path.read_text(encoding="utf-8"), object_pairs_hook=no_duplicates)
+
+
 def verify_sources():
     manifest = json.loads((UPSTREAM / "UPSTREAM.json").read_text())
     for relative, digest in manifest["files"].items():
@@ -134,8 +201,8 @@ def environment(work):
     return env, version
 
 
-def build(input_path, destination, env):
-    return run([sys.executable, str(UPSTREAM / "scripts/build.py"), "--engine", "node", "--input", str(input_path), "--name", "Resume", "--outdir", str(destination)], env=env)
+def build(input_path, destination, env, target_pages=1):
+    return run([sys.executable, str(UPSTREAM / "scripts/build.py"), "--engine", "node", "--input", str(input_path), "--name", "Resume", "--outdir", str(destination), "--target-pages", str(target_pages)], env=env)
 
 
 def compare_report(report):
@@ -162,7 +229,7 @@ def norm(value):
     return re.sub(r"\s+", " ", unicodedata.normalize("NFKC", value)).strip()
 
 
-def check_content(pdf, fragments, qa, env):
+def check_content(pdf, fragments, qa, env, target_pages=1):
     expected = collections.Counter(re.findall(r"\w+", norm(" ".join(fragments)).casefold()))
     for name, flags in (("plain", []), ("layout", ["-layout"]), ("raw", ["-raw"])):
         value = run(["pdftotext", *flags, str(pdf), "-"], env=env)
@@ -172,12 +239,30 @@ def check_content(pdf, fragments, qa, env):
             raise Blocked("Complete text preservation failed in " + name + " extraction")
     fonts = run(["pdffonts", str(pdf)], env=env)
     (qa / "fonts.txt").write_text(fonts)
-    for line in fonts.splitlines()[2:]:
+    rows = [line for line in fonts.splitlines()[2:] if line.strip()]
+    if not rows:
+        raise Blocked("PDF font metadata is missing")
+    for line in rows:
         name = re.sub(r"^[A-Z]{6}\+", "", line.split()[0])
         flags = re.search(r"\s+(yes|no)\s+(yes|no)\s+(yes|no)\s+\d+\s+\d+\s*$", line)
         if not name.startswith(("Carlito", "LiberationSerif")) or not flags or flags[1] != "yes":
             raise Blocked("Unexpected or unembedded PDF font: " + name)
+    match = re.search(r"^Pages:\s+(\d+)\s*$", run(["pdfinfo", str(pdf)], env=env), re.MULTILINE)
+    if not match or not 1 <= int(match[1]) <= target_pages:
+        raise Blocked("PDF page count is missing or exceeds the requested maximum")
+    pages = int(match[1])
     run(["pdftoppm", "-png", "-r", "150", str(pdf), str(qa / "page")], env=env)
+    images = list(qa.glob("page-*.png"))
+    if len(images) != pages or any(image.stat().st_size == 0 for image in images):
+        raise Blocked("Every PDF page must have a non-empty QA image")
+    return pages
+
+
+def positive_int(value):
+    number = int(value)
+    if number < 1:
+        raise argparse.ArgumentTypeError("Page maximum must be a positive integer")
+    return number
 
 
 def main(argv=None):
@@ -187,11 +272,20 @@ def main(argv=None):
     parser.add_argument("--qa-dir", type=Path)
     parser.add_argument("--also-docx", action="store_true")
     parser.add_argument("--overwrite", action="store_true")
-    parser.add_argument("--self-test", action="store_true")
+    parser.add_argument("--target-pages", type=positive_int, help="Maximum allowed pages; default 1, never an instruction to cut content")
+    parser.add_argument("--evidence", type=Path, help="Optional private claim ledger; all candidate text must be covered when supplied")
+    modes = parser.add_mutually_exclusive_group()
+    modes.add_argument("--self-test", action="store_true")
+    modes.add_argument("--doctor", action="store_true", help="Check dependencies and source integrity without rendering")
+    modes.add_argument("--check-input", action="store_true", help="Validate native JSON and optional evidence without document tools")
     args = parser.parse_args(argv)
     released = []
     try:
-        if not args.self_test and (not args.input or not args.output or not args.qa_dir):
+        if (args.self_test or args.doctor) and any((args.input, args.output, args.qa_dir, args.evidence, args.also_docx, args.overwrite, args.target_pages is not None)):
+            raise Blocked("Use --self-test or --doctor alone; candidate options would be ignored")
+        if args.check_input and (not args.input or any((args.output, args.qa_dir, args.also_docx, args.overwrite, args.target_pages is not None))):
+            raise Blocked("Use --check-input with --input and optional --evidence only")
+        if not any((args.self_test, args.doctor, args.check_input)) and (not args.input or not args.output or not args.qa_dir):
             raise Blocked("Supply --input, --output and a fresh --qa-dir, or use --self-test")
         if args.output and args.output.suffix.lower() != ".pdf":
             raise Blocked("Output must be PDF; use --also-docx only when requested")
@@ -202,21 +296,42 @@ def main(argv=None):
             targets.append(args.output.with_suffix(".docx"))
         if not args.overwrite and any(p.exists() for p in targets):
             raise Blocked("Output already exists; use --overwrite for an authorised revision")
+        for target in targets:
+            if any(source and target.resolve() == source.resolve() for source in (args.input, args.evidence)):
+                raise Blocked("An output must not replace an input or evidence file")
+            if args.qa_dir and target.resolve().is_relative_to(args.qa_dir.resolve()):
+                raise Blocked("Keep released outputs outside the QA directory")
         fragments = None
+        evidence = {"status": "not_provided"}
         if args.input:
-            fragments = input_fragments(json.loads(args.input.read_text(), object_pairs_hook=no_duplicates))
+            resume = read_json(args.input)
+            fragments = input_fragments(resume)
+            if args.evidence:
+                evidence = check_evidence(resume, read_json(args.evidence))
         verify_sources()
+        if args.check_input:
+            print(json.dumps({"status": "valid_input", "full_text_fragments": len(fragments), "evidence_validation": evidence,
+                              "factual_verification": "not_checked", "rendering": "not_checked", "output_released": False}, indent=2))
+            return 0
         with tempfile.TemporaryDirectory(prefix="resume-verified-") as temporary:
             work = Path(temporary)
             env, version = environment(work)
+            if args.doctor:
+                print(json.dumps({"status": "ready_for_self_test", "converter": version, "docx_version": "9.6.1",
+                                  "source_integrity": "passed", "reference_comparison": "not_checked", "output_released": False}, indent=2))
+                return 0
             reference = self_test(work, env)
-            report = {"status": "passed", "engine": "node", "docx_version": "9.6.1", "converter": version, "reference_comparison": reference, "visual_inspection": "not_checked"}
+            report = {"status": "passed", "engine": "node", "docx_version": "9.6.1", "converter": version, "reference_comparison": reference, "visual_inspection": "not_checked", "factual_verification": "not_checked", "reading_order": "not_checked", "ats_validation": "not_checked"}
             if not args.self_test:
                 folder = work / "candidate"
-                log = build(args.input.resolve(), folder, env)
-                check_content(folder / "Resume.pdf", fragments, folder, env)
+                # Render the validated snapshot, even if the original file changes mid-build.
+                snapshot = work / "candidate.json"
+                snapshot.write_text(json.dumps(resume, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+                page_limit = args.target_pages or 1
+                log = build(snapshot, folder, env, target_pages=page_limit)
+                pages = check_content(folder / "Resume.pdf", fragments, folder, env, target_pages=page_limit)
                 (folder / "build.txt").write_text(log)
-                report.update({"output": str(args.output.resolve()), "qa_directory": str(args.qa_dir.resolve()), "full_text_fragments": len(fragments), "expected_font": "Carlito (Calibri requested by source)", "fit_style": json.loads((folder / "Resume.style_used.json").read_text())})
+                report.update({"output": str(args.output.resolve()), "qa_directory": str(args.qa_dir.resolve()), "full_text_fragments": len(fragments), "expected_font": "Carlito (Calibri requested by source)", "fit_style": json.loads((folder / "Resume.style_used.json").read_text()), "page_count": pages, "target_pages": page_limit, "input_sha256": hashlib.sha256(snapshot.read_bytes()).hexdigest(), "evidence_validation": evidence})
                 shutil.copytree(folder, args.qa_dir)
                 (args.qa_dir / "verification.json").write_text(json.dumps(report, indent=2) + "\n")
                 for target in targets:
