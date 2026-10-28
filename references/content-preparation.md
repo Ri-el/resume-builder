@@ -1,4 +1,4 @@
-# Prepare content for Claude's generator
+# Content preparation
 
 Use this guide for the assistant's content work. Send the resulting JSON to the
 supplied Node generator without changing its helpers, style, or PDF export route.
@@ -73,9 +73,9 @@ contract. Keep the fact ledger and review notes in separate private files.
 1. Read the complete JSON back against the source evidence. Verify every headline
    and contact item, date, institution, skill item and bullet, including duplicate
    text that must appear in more than one place.
-2. Run the unchanged Node workflow in a fresh private output directory. Follow its
-   existing spacing-then-vertical-margin fitting ladder. Never replace it with the
-   repository's earlier Python renderer or the reconstructed port without saying so.
+2. Run the verified entry point in a fresh private output directory. Follow its
+   existing spacing-then-vertical-margin fitting ladder. Do not substitute the
+   reconstructed Python port or another renderer when a check fails.
 3. Inspect every final page and the font report. Compare plain, layout-preserving
    and raw PDF extraction with the full JSON. The supplied inspector uses partial
    text matches and does not check every header/skill item or prove reading order;
@@ -85,6 +85,7 @@ contract. Keep the fact ledger and review notes in separate private files.
    Moving the company to `sub` cannot solve a collision when it is already there.
 5. Treat a non-zero build/inspection exit as a failed build even when files remain
    on disk. Ask about approved cuts or more pages if the fitting ladder is exhausted.
-6. Deliver PDF only by default. Provide DOCX or a photo variant only if requested.
+6. Deliver PDF only by default. Provide DOCX only if requested. Photo layouts are
+   outside the supported workflow and require a separately validated change.
    State the actual engine, fonts, fitting level, checks run and any unresolved
    job requirement. Keep unperformed checks marked **not checked**.

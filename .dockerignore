@@ -1,0 +1,10 @@
+**
+!Dockerfile
+!requirements.txt
+!scripts/
+!scripts/build_verified_resume.py
+!vendor/
+!vendor/claude-resume-generator/
+!vendor/claude-resume-generator/**
+**/node_modules
+**/__pycache__

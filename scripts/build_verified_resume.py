@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Run the supplied Claude method or stop; never silently substitute a renderer."""
+"""Build a resume only after reproducing the supplied reference."""
 
 import argparse
 import collections

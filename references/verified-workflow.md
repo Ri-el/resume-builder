@@ -1,7 +1,7 @@
 # Verified resume generation
 
 Use `scripts/build_verified_resume.py` as the single entry point for the established
-PDF format. Keep Claude's supplied renderer, style and fitting helpers unchanged.
+PDF format. Keep the supplied renderer, style and fitting helpers unchanged.
 
 ```bash
 python scripts/build_verified_resume.py --self-test
@@ -42,11 +42,13 @@ Review facts and target-role gaps independently. Never treat this as an ATS scor
 
 ## Reuse in new chats
 
-Select the installed **Resume Builder** skill explicitly when asking for a resume.
-Its instructions require this entry point. A GitHub link alone cannot force every
-ChatGPT conversation to load or execute a workflow. If the tools, fonts or pinned
-converter cannot be provided, stop and report the limitation. Do not send private
-candidate information to public CI to work around a missing local environment.
+Give the public repository link with the start prompt in [README.md](../README.md),
+or select **Resume Builder** if you have installed a copy. Follow [setup](../docs/SETUP.md)
+to obtain the complete repository and required tools. A GitHub link alone cannot
+force every ChatGPT conversation to load or execute a workflow. If the tools,
+fonts or pinned converter cannot be provided, stop and report the limitation.
+Do not send private candidate information to public CI to work around a missing
+local environment.
 
 The supplied photo extension and reconstructed Python port remain source artifacts.
 This verified entry point supports the established no-photo PDF layout. A request

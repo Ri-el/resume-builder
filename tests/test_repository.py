@@ -22,13 +22,17 @@ class RepositoryTests(unittest.TestCase):
         self.assertLess(len(skill.splitlines()), 500)
 
     def test_local_markdown_links_resolve(self):
-        for filename in ("README.md", "SKILL.md"):
-            text = (ROOT / filename).read_text(encoding="utf-8")
+        documents = [ROOT / name for name in ("README.md", "SKILL.md", "CONTRIBUTING.md", "AGENTS.md")]
+        documents.extend((ROOT / "docs").glob("*.md"))
+        documents.extend((ROOT / "references").glob("*.md"))
+        for document in documents:
+            filename = document.relative_to(ROOT)
+            text = document.read_text(encoding="utf-8")
             for target in re.findall(r"\[[^\]]+\]\(([^)]+)\)", text):
                 if re.match(r"[a-zA-Z][a-zA-Z0-9+.-]*:", target):
                     continue
                 with self.subTest(filename=filename, target=target):
-                    path = (ROOT / target.split("#", 1)[0]).resolve()
+                    path = (document.parent / target.split("#", 1)[0]).resolve()
                     self.assertTrue(path.is_relative_to(ROOT))
                     self.assertTrue(path.is_file(), f"Missing linked resource: {target}")
 
