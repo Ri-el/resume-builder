@@ -72,7 +72,9 @@ Open `private/resume.pdf` and inspect every `private/qa/page-*.png` before using
 
 Every build checks the renderer's source hashes, exact document library and converter, then reproduces the supplied fictional reference. The generated reference must match its DOCX XML, PDF text, measured word positions and pixel comparison. Candidate output is checked for complete text preservation and embedded fonts before release.
 
-The report leaves visual inspection marked `not_checked` until a person or assistant actually looks at every page. Review facts, reading order, awkward wraps and title/date collisions. These checks do not establish a universal ATS pass or guarantee a job outcome.
+The automated report leaves visual inspection marked `not_checked`. Separately
+review every page for factual issues, reading order, awkward wraps and title/date
+collisions. These checks do not establish a universal ATS pass or guarantee a job outcome.
 
 Before generation, validate native input and optional source coverage without any
 document tools:
