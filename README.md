@@ -16,6 +16,10 @@ For assistants that load skill folders, use the whole repository so the optional
 
 ## Use the supplied Claude generation method
 
+Use [the verified entry point](references/verified-workflow.md) for every candidate PDF. It reproduces the reference before each build and stops if the environment or output differs. It never silently switches renderer. An installed Resume Builder skill explicitly selects this workflow in new chats; a bare GitHub link alone cannot enforce execution.
+
+Run `python scripts/build_verified_resume.py --self-test` to check the environment. Candidate output is released only after source, reference, text-preservation and font checks pass. Visual inspection remains a required assistant step.
+
 Read [content preparation](references/content-preparation.md) for how to extract evidence, write truthful content and put it into the generator's native fields. Read [generation and verification](references/claude-generation.md) before creating files. The [input contract](vendor/claude-resume-generator/docs/INPUT_FORMAT.md) describes the supported section types, including additional experience and professional development.
 
 The [Node generator](vendor/claude-resume-generator/generate.js), [style settings](vendor/claude-resume-generator/config/style.json) and supplied helpers are copied unchanged from the user's package. [UPSTREAM.json](vendor/claude-resume-generator/UPSTREAM.json) records their hashes. Its [reconstruction notes](vendor/claude-resume-generator/docs/RECONSTRUCTION_NOTES.md) distinguish the recovered Node helpers, later wrapper, reconstructed Python port and fitting extensions. No private approved resume is included.
@@ -38,9 +42,8 @@ Use a fresh output directory. Measure reproduction before using candidate conten
 After preparing approved input:
 
 ```bash
-python vendor/claude-resume-generator/scripts/build.py --engine node \
-  --input private/candidate.json --name Candidate_Resume \
-  --outdir private/candidate-export
+python scripts/build_verified_resume.py --input private/candidate.json \
+  --output private/resume.pdf --qa-dir private/resume-qa
 ```
 
 Deliver PDF only by default. The internal DOCX, JSON and QA images are not extra deliverables. Inspect every page and compare all supplied fields with plain/layout/raw extraction; the bundled inspector checks only part of the content and does not establish visual quality or a universal ATS pass. Never deliver files left behind by a failed build. Content cuts, new layout decisions and alternative engines require the user's instruction.

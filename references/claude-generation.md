@@ -57,10 +57,11 @@ but does not fail its exit status when those values disagree; read its output.
 
 ## Build the candidate file
 
+Use [the verified entry point](verified-workflow.md) for delivery. It enforces the Node method and refuses an environment mismatch. The source package commands below document the underlying method; they do not replace the verified entry point.
+
 ```bash
-python vendor/claude-resume-generator/scripts/build.py --engine node \
-  --input private/candidate.json --name Candidate_Resume \
-  --outdir private/candidate-export
+python scripts/build_verified_resume.py --input private/candidate.json \
+  --output private/resume.pdf --qa-dir private/resume-qa
 ```
 
 Use the package's native JSON contract. The style intentionally keeps its 6.9-inch

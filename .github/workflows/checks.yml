@@ -59,7 +59,9 @@ jobs:
       - name: Reproduce the supplied fictional reference
         env:
           RESUME_RUN_CLAUDE_TESTS: "1"
-        run: python -m unittest discover -s tests -p test_claude_render.py -v
+        run: |
+          python -m unittest discover -s tests -p test_claude_render.py -v
+          python -m unittest discover -s tests -p test_verified_resume.py -v
       - name: Build the fictional verification preview
         run: |
           python vendor/claude-resume-generator/scripts/build.py --engine node --input vendor/claude-resume-generator/input/sample_resume.json --name Sample_Resume --outdir private/claude-ci-preview

@@ -1,6 +1,6 @@
 ---
 name: resume-builder
-description: Prepare truthful resume content and place it into the supplied Claude Node generator without redesigning its PDF layout. Use for drafting, bounded revisions, tailoring, translation, resume audits, and DOCX/PDF generation with factual, content, and rendered-output checks.
+description: Create and revise resumes using the supplied Claude renderer through a locked verification step. Use for resume/CV requests and Ri-el/resume-builder links, including new chats, drafting, tailoring, translation and audits. Preserve facts and layout; stop if the reference PDF cannot be reproduced rather than use an alternative renderer.
 ---
 
 # Resume Builder Skill
@@ -30,7 +30,7 @@ This skill is both a production method and a review filter. It does not authoriz
 4. Apply Gates A and B to every task. Apply Gate C to file deliverables; mark unavailable checks as **not checked** and irrelevant checks as **not applicable**, never as passed.
 5. Deliver only the requested output with a short, accurate check-status note.
 
-For text-only requests, write the requested text without creating DOCX/PDF files. For file requests, use the [supplied Claude Node workflow](references/claude-generation.md) and inspect the actual final exports. Keep its renderer and style unchanged; the assistant's added responsibility is facts, wording, selection and field placement. For related cover letters or profiles, adapt only the relevant principles.
+For text-only requests, write the requested text without creating DOCX/PDF files. For PDF requests, read [the verified workflow](references/verified-workflow.md) and use only `scripts/build_verified_resume.py`. It checks the reference environment and sample before each build, calls the unchanged Node method, and blocks release on a failed automated check. Do not bypass a blocked build or replace it with Python, HTML, ReportLab, another converter or a reconstructed template. Inspect every final page yourself. The assistant's added responsibility is facts, wording, selection and field placement.
 
 ## 2. Source hierarchy and fact ledger
 
@@ -305,7 +305,7 @@ Keep one authoritative editable source file. When using DOCX, generate the PDF f
 ### 8.2 Creation
 Use a document library such as Python `python-docx` or Node.js `docx` when available. Set page size explicitly. Use paragraph/run styles, true bullet formatting, tab stops for dates, and real section rules. Avoid layout hacks that depend on repeated spaces, tabs typed by hand, or floating text boxes.
 
-For the established format, prepare native JSON using [content-preparation.md](references/content-preparation.md), then run `python vendor/claude-resume-generator/scripts/build.py --engine node --input private/candidate.json --name Candidate_Resume --outdir private/candidate-export`. Use a fresh output directory and retain the unchanged Node method. Deliver PDF only unless another format was requested. Inspect every final page and compare every supplied field with extracted text; the upstream inspector is partial. Stop on build failure or exhausted fitting. Never delete content or shrink fonts automatically. The reconstructed Python port and the older strict-profile builder are alternatives only when explicitly chosen and disclosed.
+For the established format, prepare native JSON using [content-preparation.md](references/content-preparation.md), then run `python scripts/build_verified_resume.py --input private/candidate.json --output private/resume.pdf --qa-dir private/resume-qa`. Use a fresh QA directory. The entry point verifies source hashes, docx 9.6.1, LibreOffice 24.2.7.2, matching reference XML and PDF, all candidate text, expected embedded fonts and successful fitting before releasing the output. Deliver PDF only unless DOCX was requested with `--also-docx`. Inspect every final `page-*.png`; automated checks leave visual inspection **not checked**. Never bypass failure, cut content or shrink fonts to force delivery.
 
 ### 8.3 Export and inspect
 If the whole repository and Python 3.10+ are available, optionally run the bundled [DOCX preflight](scripts/check_docx.py) before export:
