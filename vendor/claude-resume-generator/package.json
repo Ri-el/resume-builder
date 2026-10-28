@@ -1,0 +1,12 @@
+{
+  "name": "resume-generator",
+  "version": "1.0.0",
+  "description": "Data-driven resume DOCX/PDF generator (approved house format)",
+  "private": true,
+  "scripts": {
+    "sample": "python3 scripts/build.py --input input/sample_resume.json --name Sample_Resume --outdir output"
+  },
+  "dependencies": {
+    "docx": "9.6.1"
+  }
+}

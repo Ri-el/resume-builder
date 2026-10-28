@@ -1,0 +1,13 @@
+Environment that produced everything in this package
+-----------------------------------------------------
+Node.js      : v22.22.2
+npm          : 10.9.7
+docx (npm)   : 9.6.1
+LibreOffice  : LibreOffice 24.2.7.2 420(Build:2)
+poppler      : pdftoppm version 24.02.0
+Python       : Python 3.12.3
+python-docx  : 1.2.0
+Pillow       : 12.1.1
+Carlito pkg  : fonts-crosextra-carlito 20230309-2
+Calibri      : 0 files installed (0 = not installed)
+OS           : Ubuntu 24.04.4 LTS
