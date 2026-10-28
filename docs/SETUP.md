@@ -77,6 +77,30 @@ produce the same result.
 
 ## Review the result
 
+Before a full build, run `python scripts/build_verified_resume.py --doctor` (or
+`docker run --rm --network none resume-builder --doctor`). It checks source
+integrity and required program/library versions without rendering. A result of
+`ready_for_self_test` does not establish font fidelity; the reference self-test
+still runs during generation. A blocker must be fixed in the reference environment.
+
+Validate private native input and the separate ledger without Node or LibreOffice:
+
+```bash
+python scripts/build_verified_resume.py --check-input \
+  --input /absolute/task/candidate.json --evidence /absolute/task/evidence.json
+```
+
+See [evidence format](EVIDENCE_FORMAT.md) for the ledger contract. This check never
+releases files or verifies factual truth. Manual builds may omit the ledger; the
+report marks it `not_provided`. Assistant-authored file builds supply it.
+
+For a multipage professional or academic CV, add `--target-pages N` to the normal
+generation command. This sets a positive maximum; it does not force exactly N
+pages, change the original visual style or authorise cuts. Keep an explicit
+one-page instruction unless the candidate changes it. The same options work after
+the Docker image name, with candidate and ledger paths inside the mounted folder.
+Keep the released PDF/DOCX outside the fresh QA directory.
+
 Require exit 0 and `status: passed`. Open every `page-*.png` in the QA directory
 and inspect the PDF. Read `fonts.txt`, `plain.txt`, `layout.txt` and `raw.txt`.
 Check the candidate's facts, section sequence, dates and titles, awkward wraps,
@@ -92,6 +116,8 @@ overflow and orphan headings. The JSON report leaves visual inspection marked
 | Reference converter unavailable | Use the reference environment or Docker. Do not switch converters. |
 | Reference DOCX or PDF differs | Check tools, fonts and unmodified source. Do not edit the reference to make it pass. |
 | Required list is empty | Supply a truthful headline/contact item or required section; do not invent one. |
+| Evidence is missing, stale or references an unknown source | Reconcile the native input and private ledger against actual supplied sources; rerun `--check-input`. |
+| Diagnostic says `valid_input` or `ready_for_self_test` | No PDF has been verified or released. Continue with the normal generation command. |
 | QA directory must be fresh | Choose a new path for the next build. |
 | Input will not fit or a title/date collides | Ask the candidate about content cuts or a separately approved layout change. Do not shorten titles or shrink fonts. |
 | PDF text preservation fails | Inspect the full source and extraction. Do not deliver partial content. |

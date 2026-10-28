@@ -52,6 +52,25 @@ class VerifiedTests(unittest.TestCase):
 
 @unittest.skipUnless(os.environ.get("RESUME_RUN_CLAUDE_TESTS") == "1", "Requires the reference renderer environment")
 class VerifiedRenderTests(unittest.TestCase):
+    def test_requested_two_page_cv_uses_original_style_and_preserves_all_content(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            output = Path(tmp) / "cv.pdf"
+            qa = Path(tmp) / "qa"
+            log = io.StringIO()
+            # The supplied dense fixture is known to need two pages at L0.
+            with contextlib.redirect_stdout(log):
+                code = verified.main(["--input", str(verified.UPSTREAM / "input/sample_dense.json"),
+                                      "--output", str(output), "--qa-dir", str(qa),
+                                      "--target-pages", "2", "--also-docx"])
+            self.assertEqual(code, 0, log.getvalue())
+            report = json.loads(log.getvalue())
+            self.assertEqual(report["page_count"], 2)
+            self.assertEqual(report["target_pages"], 2)
+            self.assertIn("L0 as approved: 2 page(s)", (qa / "build.txt").read_text())
+            self.assertTrue(output.with_suffix(".docx").is_file())
+            self.assertEqual(len(list(qa.glob("page-*.png"))), 2)
+            self.assertEqual(report["reading_order"], "not_checked")
+
     def test_verified_entry_point_reproduces_and_checks_candidate(self):
         with tempfile.TemporaryDirectory() as tmp:
             output = Path(tmp) / "candidate.pdf"

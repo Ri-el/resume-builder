@@ -23,7 +23,8 @@ and [generation procedure](claude-generation.md) before building a file.
 
 ## Write and select the content
 
-- Use British spelling for new prose, without altering official names or titles.
+- Use the requested spelling convention, defaulting to British spelling for new
+  prose, without altering official names or titles.
 - Use a short factual headline and summary supported by the later entries.
 - Write bullets as action, object or scope, and supported method or purpose.
   Include an outcome only when the evidence supports it. Never invent numbers.
@@ -40,8 +41,10 @@ and [generation procedure](claude-generation.md) before building a file.
 ## Map facts into the existing fields
 
 The generator renders `sections` in array order. Use Summary, Education,
-Experience, Skills, Achievements and Languages for the established format;
-omit empty sections. Change an approved order only when the user requests it.
+Experience, Skills, Achievements and Languages as the new-graduate resume default;
+omit empty or unhelpful sections. For a new professional or academic CV, select
+sections using [intake and document types](intake-and-document-types.md).
+Change an already approved order only when the user requests it.
 Other truthful sections, such as Professional Development or Additional
 Experience, use the same existing section types and require no renderer changes.
 
@@ -67,13 +70,19 @@ unknown. The renderer adds bullets and separators itself.
 Do not add an invented `schema_version`, employer object, `languages` top-level
 field or other keys from a different generator. Use this package's native input
 contract. Keep the fact ledger and review notes in separate private files.
+For assistant-authored file builds, prepare the separate
+[evidence ledger](../docs/EVIDENCE_FORMAT.md) and validate input and claim coverage
+with `--check-input`. The ledger covers selected candidate wording; the complete
+career record remains separate. Source coverage does not prove factual truth.
 
 ## Check the handoff and final PDF
 
 1. Read the complete JSON back against the source evidence. Verify every headline
    and contact item, date, institution, skill item and bullet, including duplicate
    text that must appear in more than one place.
-2. Run the verified entry point in a fresh private output directory. Follow its
+2. Run the verified entry point in a fresh private output directory with the
+   ledger supplied through `--evidence`. Set `--target-pages N` for a selected
+   multipage CV, respecting the requested maximum. Follow its
    existing spacing-then-vertical-margin fitting ladder. Do not substitute the
    reconstructed Python port or another renderer when a check fails.
 3. Inspect every final page and the font report. Compare plain, layout-preserving

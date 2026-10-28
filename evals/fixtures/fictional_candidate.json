@@ -1,0 +1,19 @@
+{
+  "name": "Morgan Tan",
+  "headline": ["Inventory Records"],
+  "contact": ["morgan.tan@example.com"],
+  "sections": [
+    {
+      "heading": "Experience",
+      "type": "entries",
+      "items": [
+        {
+          "title": "Stock Assistant",
+          "dates": "2022 – 2024",
+          "sub": "Fictional Retail Co.",
+          "bullets": ["Maintained stock records in Microsoft Excel"]
+        }
+      ]
+    }
+  ]
+}

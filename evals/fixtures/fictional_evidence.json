@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "sources": [
+    {
+      "id": "career-notes",
+      "kind": "candidate_notes",
+      "label": "Fictional candidate notes supplied for this test"
+    }
+  ],
+  "claims": [
+    {"path": "/name", "value": "Morgan Tan", "source_ids": ["career-notes"], "status": "candidate_reported"},
+    {"path": "/headline/0", "value": "Inventory Records", "source_ids": ["career-notes"], "status": "candidate_reported"},
+    {"path": "/contact/0", "value": "morgan.tan@example.com", "source_ids": ["career-notes"], "status": "candidate_reported"},
+    {"path": "/sections/0/items/0/title", "value": "Stock Assistant", "source_ids": ["career-notes"], "status": "candidate_reported"},
+    {"path": "/sections/0/items/0/dates", "value": "2022 – 2024", "source_ids": ["career-notes"], "status": "candidate_reported"},
+    {"path": "/sections/0/items/0/sub", "value": "Fictional Retail Co.", "source_ids": ["career-notes"], "status": "candidate_reported"},
+    {"path": "/sections/0/items/0/bullets/0", "value": "Maintained stock records in Microsoft Excel", "source_ids": ["career-notes"], "status": "candidate_reported"}
+  ]
+}
