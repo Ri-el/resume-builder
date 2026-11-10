@@ -33,6 +33,12 @@ the ZIP. With text-only tools, prepare the content and run the generator locally
 See [intake and capabilities](references/intake-and-document-types.md). Cross-platform
 AI compatibility is not established by the automated Python tests.
 
+For a small update, attach your saved Word source and matching native JSON and
+ask to apply only the listed edits. The
+[approved DOCX export](references/verified-workflow.md#routine-edits-to-an-approved-word-layout)
+reuses that layout with the installed LibreOffice and checks the exact page count,
+embedded fonts and approved text. Keep those source files private.
+
 ## Layout
 
 A4, one column, black text and grey dates/company lines. A 16 pt name, 10.5 pt section headings, 10 pt body and 9.5 pt headline/contact/dates keep the page compact. Entries use right-aligned dates and round bullets. There are no photos, tables, icons, skill bars or watermarks in the supported layout.
@@ -70,7 +76,7 @@ Open `private/resume.pdf` and inspect every `private/qa/page-*.png` before using
 
 ## What gets checked
 
-Every build checks the renderer's source hashes, exact document library and converter, then reproduces the supplied fictional reference. The generated reference must match its DOCX XML, PDF text, measured word positions and pixel comparison. Candidate output is checked for complete text preservation and embedded fonts before release.
+The default build checks the renderer's source hashes, exact document library and converter, then reproduces the supplied fictional reference. The generated reference must match its DOCX XML, PDF text, measured word positions and pixel comparison. Candidate output is checked for complete text preservation and embedded fonts before release.
 
 The automated report leaves visual inspection marked `not_checked`. Separately
 review every page for factual issues, reading order, awkward wraps and title/date

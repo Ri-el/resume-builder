@@ -11,7 +11,7 @@ Use the repository's existing renderer. Prepare content from the candidate's evi
 
 1. Obtain the complete repository, including `scripts/`, `references/` and `vendor/`. Read [intake and document types](references/intake-and-document-types.md), [content preparation](references/content-preparation.md) and [the verified workflow](references/verified-workflow.md). Reading this file alone does not make the generator available.
 2. Use an authorised GitHub connection, clone the public repository, or download `https://github.com/Ri-el/resume-builder/archive/refs/heads/main.zip`. If downloads are blocked, ask the user to attach that ZIP. Do not ask them to paste individual scripts.
-3. Check capabilities using [setup](docs/SETUP.md) and `python scripts/build_verified_resume.py --doctor`. A successful doctor check means ready for the reference self-test, not a verified PDF. Use Docker when available, or the reference native dependencies. Never claim that a link installs tools or an account-wide skill.
+3. For a new layout or a reference-verified build, use [setup](docs/SETUP.md) and `python scripts/build_verified_resume.py --doctor` before attempting dependency setup. A successful doctor check means ready for the reference self-test, not a verified PDF. For an authorised revision with a saved approved DOCX, follow the [approved DOCX export](references/verified-workflow.md#routine-edits-to-an-approved-word-layout) instead. Never claim that a link installs tools or an account-wide skill.
 4. Establish the task, document type, target role, supplied application requirements, page limit, language and output format from the request and sources. Ask only about missing facts or choices that materially block the task. Default to PDF only. Text-only edits and audits do not require document tools or a build.
 5. Distinguish a targeted resume, a professional employment CV and an academic CV. Use the document-type guide to select sections and length. Preserve explicit one-page, layout and bounded-edit instructions. If no candidate information is supplied, ask for an existing resume or career notes and an optional target role.
 
@@ -28,7 +28,7 @@ Use the repository's existing renderer. Prepare content from the candidate's evi
 
 ## Preserve the layout
 
-Use `vendor/claude-resume-generator/config/style.json` unchanged. For a new graduate resume, default to Summary, Education, Experience, Skills, Achievements and Languages, omitting empty or unhelpful sections. For a new experienced or academic CV, select and order the existing section types using the document-type guide. Preserve an already approved section order during bounded revisions. Use no photo, layout table, text box, icon, colour decoration or skill bar.
+For new builds, use `vendor/claude-resume-generator/config/style.json` unchanged. For a new graduate resume, default to Summary, Education, Experience, Skills, Achievements and Languages, omitting empty or unhelpful sections. For a new experienced or academic CV, select and order the existing section types using the document-type guide. Preserve an already approved section order during bounded revisions. Use no photo, layout table, text box, icon, colour decoration or skill bar.
 
 Preserve A4, original margins, sizes, justified body, round bullets, 6.9-inch date tab and single spacing. The source requests Calibri but the measured reference uses Carlito 1.104 and Liberation Serif bullet dots. Do not install a different Calibri-compatible font and call it equivalent.
 
@@ -47,7 +47,7 @@ python scripts/build_verified_resume.py --input /absolute/task/candidate.json \
 
 The [Docker route](docs/SETUP.md#docker) runs the same entry point. Keep all candidate files outside the installed skill directory and outside the Docker build context. Do not upload them to public CI or third-party converters.
 
-1. Require exit 0 and `status: passed`. A blocked build means no PDF may be delivered. Explain the actual reason; never bypass a failed check, edit the source hashes or switch engines.
+1. Require exit 0 and `status: passed`. Explain blocked builds promptly. Never automatically switch modes after a failed check or edit the source hashes. An authorised approved-DOCX export has `reference_comparison: not_checked`; describe it as a checked export of the approved layout.
 2. Review the complete JSON against the candidate's evidence and latest corrections. Evidence coverage checks references and matching values; automated text checks confirm preservation. Both leave factual truth for review.
 3. Open **every** final `page-*.png` in the QA directory. Check wrapping, overflow, title/date collisions, orphan headings and consistent alignment. Do not claim visual inspection if images cannot be opened.
 4. Read `fonts.txt` and plain/layout/raw extraction. Check section sequence and title/date/employer grouping on every page. `factual_verification`, `reading_order`, `ats_validation` and `visual_inspection` remain `not_checked` in the automated report; state separately only reviews actually performed. Do not call a file ATS-proof merely because its text is selectable.

@@ -75,6 +75,14 @@ reference environment. On macOS, Windows or another Linux distribution, prefer
 the Linux Docker image rather than expecting the installed Word converter to
 produce the same result.
 
+## Re-export a saved Word layout
+
+For an authorised edit to an approved DOCX, use the
+[approved DOCX export](../references/verified-workflow.md#routine-edits-to-an-approved-word-layout).
+It needs Python, LibreOffice, Poppler and the approved fonts available to the
+converter. A Node installation or the pinned reference converter is not required
+for this route. Review the output on the current machine before using it.
+
 ## Review the result
 
 Before a full build, run `python scripts/build_verified_resume.py --doctor` (or
@@ -113,7 +121,7 @@ overflow and orphan headings. The JSON report leaves visual inspection marked
 | --- | --- |
 | No repository download or URL access | Attach the repository ZIP to the chat. |
 | Chat cannot execute code or run Docker | Prepare content in chat, then run the commands on your computer. No PDF was generated in that chat. |
-| Reference converter unavailable | Use the reference environment or Docker. Do not switch converters. |
+| Reference converter unavailable | For reference-verified generation, use the reference environment or Docker. Use the separate approved DOCX route only for authorised revisions with a saved Word layout. |
 | Reference DOCX or PDF differs | Check tools, fonts and unmodified source. Do not edit the reference to make it pass. |
 | Required list is empty | Supply a truthful headline/contact item or required section; do not invent one. |
 | Evidence is missing, stale or references an unknown source | Reconcile the native input and private ledger against actual supplied sources; rerun `--check-input`. |
