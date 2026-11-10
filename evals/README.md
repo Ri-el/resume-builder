@@ -6,11 +6,11 @@ claimed by this repository. A list of prompts is not evidence of successful runs
 
 ## Run a case
 
-1. Start a fresh conversation with the target assistant and give it the public
-   repository link and the same short start instructions a user would receive.
-   For a locally installed skill test, record that route instead.
-2. Provide the case's `prompt` without its criteria, a diagnosis or an expected
-   answer. Keep independent runs isolated from previous responses and artifacts.
+1. Start a fresh conversation with the target assistant. Record any locally
+   installed skill route. Keep independent runs isolated from previous responses
+   and artifacts.
+2. Paste the case's `prompt` without its criteria, a diagnosis or an expected
+   answer. Include the repository link if the prompt does not already contain it.
 3. Record the actual response and requested output files, if any. Use fictional
    data only. Do not upload real resumes to public results or CI.
 4. Assess each listed criterion as `pass`, `fail` or `not_assessed`, citing a

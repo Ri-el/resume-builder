@@ -94,11 +94,10 @@ for this route. Review the output on the current machine before using it.
 
 ## Review the result
 
-Before a full build, run `python scripts/build_verified_resume.py --doctor` (or
-`docker run --rm --network none resume-builder --doctor`). It checks source
-integrity and required program/library versions without rendering. A result of
-`ready_for_self_test` does not establish font fidelity; the reference self-test
-still runs during generation. A blocker must be fixed in the reference environment.
+The build checks its own prerequisites. To diagnose an environment separately,
+run `python scripts/build_verified_resume.py --doctor --portable` for a portable
+build or omit `--portable` for a reference build. It checks source integrity
+and required programs without rendering. The actual PDF checks run at build time.
 
 Validate private native input and the separate ledger without Node or LibreOffice:
 

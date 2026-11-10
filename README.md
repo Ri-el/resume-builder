@@ -4,45 +4,30 @@ Single-column A4 resumes and CVs with a fixed visual style, evidence-based writi
 and checked PDF output. Select content for the application, preserve the candidate's
 facts and validate the actual files before delivery.
 
+## Make a resume with AI
+
+Attach your current resume or paste your career notes, then send this message.
+
+> Build my resume using https://github.com/Ri-el/resume-builder.
+
+Add a job description if you want a tailored version. Add a page limit or
+preferred language if you have one. For a small edit, attach the approved Word
+file and its matching JSON if you have them.
+
+### Instructions for AI assistants
+
+When a resume request names `Ri-el/resume-builder` or links to this repository,
+read [SKILL.md](SKILL.md) from the requested revision. Use the candidate evidence
+already in the chat and ask only for missing information essential to the result.
+With the needed tools available, build, inspect and return the PDF in the same turn.
+Use portable export for ordinary new PDFs and the saved Word layout for approved
+edits. Keep candidate files private and validate them with the renderer.
+
+PDF delivery requires an assistant that can access the repository, run the
+renderer and return files. With text-only tools, provide the content and explain
+what is needed to finish the PDF. See [capabilities](references/intake-and-document-types.md#work-within-actual-capabilities).
+
 [View the sample PDF](vendor/claude-resume-generator/output/Sample_Resume.pdf) · [Download ZIP](https://github.com/Ri-el/resume-builder/archive/refs/heads/main.zip) · [Setup](docs/SETUP.md)
-
-## Use with an AI assistant
-
-Start a chat, attach your existing resume or career notes, and paste:
-
-```text
-Use https://github.com/Ri-el/resume-builder to create my resume or CV.
-Read and follow https://raw.githubusercontent.com/Ri-el/resume-builder/main/SKILL.md
-Obtain the complete repository. Establish the document type and page requirements.
-Keep the approved visual style and any existing constraints unchanged.
-Use only my supplied facts and latest corrections. Deliver PDF only.
-Maintain a private evidence ledger, validate input and source coverage, then run
-the verified generator. Inspect every output page and state checks actually done.
-If the required tools or reference checks fail, explain the blocker and do not
-substitute another template or claim that generation succeeded.
-
-Document type and page limit: [resume / professional CV / academic CV; limit if any]
-Target role or job description: [optional]
-My information: [attach files or paste notes]
-```
-
-The assistant needs repository access and a code environment with the required
-renderer, or Docker. A link supplies instructions; it does not install software or
-give every AI session file-generation tools. If downloads are unavailable, attach
-the ZIP. With text-only tools, prepare the content and run the generator locally.
-See [intake and capabilities](references/intake-and-document-types.md). Cross-platform
-AI compatibility is not established by the automated Python tests.
-
-For a small update, attach your saved Word source and matching native JSON and
-ask to apply only the listed edits. The
-[approved DOCX export](references/verified-workflow.md#routine-edits-to-an-approved-word-layout)
-reuses that layout with the installed LibreOffice and checks the exact page count,
-embedded fonts and approved text. Keep those source files private.
-
-For a new PDF without a pixel-match requirement, use
-[portable mode](references/verified-workflow.md#new-exports-with-installed-libreoffice).
-It uses the same Word template with the installed LibreOffice and skips rebuilding
-the fictional reference. The PDF still goes through text, font and page checks.
 
 ## Layout
 
@@ -63,7 +48,20 @@ The DOCX requests Calibri. The reference PDF embeds **Carlito 1.104**, with Libe
 
 ## Run locally
 
-With Docker installed, from a downloaded or cloned copy of this repository:
+From a checkout with the [portable prerequisites](docs/SETUP.md#build-with-the-installed-libreoffice),
+test the PDF workflow with the fictional fixture and its matching evidence.
+
+```bash
+python3 scripts/build_verified_resume.py --portable \
+  --input evals/fixtures/fictional_candidate.json \
+  --evidence evals/fixtures/fictional_evidence.json \
+  --output private/sample.pdf --qa-dir private/sample-qa
+```
+
+Open `private/sample.pdf` and inspect every `private/sample-qa/page-*.png`.
+For actual applications, use your own private input and evidence files.
+
+With Docker installed, build the reference environment once and reuse the image.
 
 ```bash
 docker build --platform linux/amd64 -t resume-builder .
@@ -73,7 +71,7 @@ cp vendor/claude-resume-generator/input/sample_resume.json private/candidate.jso
 docker run --rm --platform linux/amd64 --network none \
   --user "$(id -u):$(id -g)" \
   --mount "type=bind,source=$(pwd)/private,target=/work" \
-  resume-builder --input /work/candidate.json \
+  resume-builder --portable --input /work/candidate.json \
   --output /work/resume.pdf --qa-dir /work/qa
 ```
 
@@ -81,26 +79,30 @@ Open `private/resume.pdf` and inspect every `private/qa/page-*.png` before using
 
 ## What gets checked
 
-The default build checks the renderer's source hashes, exact document library and converter, then reproduces the supplied fictional reference. The generated reference must match its DOCX XML, PDF text, measured word positions and pixel comparison. Candidate output is checked for complete text preservation and embedded fonts before release.
+Portable builds check the renderer's source hashes, exact document library,
+candidate text, page layout and embedded fonts. Add the evidence ledger to check
+that every claim has a source and matches the approved wording. For exact
+reference reproduction, run a strict build without `--portable`. It also
+compares the fictional reference's DOCX XML, PDF text, word positions and pixels.
 
 The automated report leaves visual inspection marked `not_checked`. Separately
 review every page for factual issues, reading order, awkward wraps and title/date
 collisions. These checks do not establish a universal ATS pass or guarantee a job outcome.
 
-Before generation, validate native input and optional source coverage without any
-document tools:
+Use `--check-input` when you need to validate the JSON and evidence without
+generating a PDF. Use `--doctor --portable` to diagnose missing dependencies.
+The build command validates its input and supplied evidence itself.
 
 ```bash
 python scripts/build_verified_resume.py --check-input \
   --input evals/fixtures/fictional_candidate.json \
   --evidence evals/fixtures/fictional_evidence.json
-python scripts/build_verified_resume.py --doctor
+python scripts/build_verified_resume.py --doctor --portable
 ```
 
-The first command demonstrates the fictional contract only. Replace all example
-facts for an actual application. `valid_input` means the input and supplied ledger
-are consistent; `ready_for_self_test` means dependencies and source hashes passed.
-Neither means a PDF was generated. The build runs the full reference test itself.
+`valid_input` confirms that the input and supplied ledger are consistent.
+`ready_for_portable_export` confirms that the prerequisite check passed.
+A completed build reports `status: passed` and provides the PDF for visual review.
 
 Assistant-authored file builds supply a private
 [evidence ledger](docs/EVIDENCE_FORMAT.md) with `--evidence /work/evidence.json`.

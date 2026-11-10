@@ -3,6 +3,11 @@
 Use `scripts/build_verified_resume.py` as the single entry point for the established
 PDF format. Keep the supplied renderer, style and fitting helpers unchanged.
 
+For ordinary new PDFs, go to [portable exports](verified-workflow.md#new-exports-with-installed-libreoffice).
+Use the [approved Word route](verified-workflow.md#routine-edits-to-an-approved-word-layout) for an
+edit to a saved layout. The commands below apply when exact reference
+reproduction is required.
+
 ```bash
 python scripts/build_verified_resume.py --doctor
 python scripts/build_verified_resume.py --check-input \
@@ -115,11 +120,11 @@ ledger is checked for coverage, not authenticity. Builds without it report
 
 ## Reuse in new chats
 
-Give the public repository link with the start prompt in [README.md](../README.md),
-or select **Resume Builder** if you have installed a copy. Follow [setup](../docs/SETUP.md)
-to obtain the complete repository and the tools for the selected mode. A GitHub
-link alone cannot force every ChatGPT conversation to load or execute a workflow.
-If the required tools or fonts cannot be provided, stop and report the limitation.
+Share the [repository link](https://github.com/Ri-el/resume-builder) with the
+resume request and attach career evidence if the chat does not already have it.
+Follow [setup](../docs/SETUP.md) for the prerequisites of the selected mode.
+When the chat lacks file or renderer access, continue with evidence-based content
+and explain what is needed to finish the PDF.
 Do not send private candidate information to public CI to work around a missing
 local environment.
 

@@ -1,6 +1,6 @@
 ---
 name: resume-builder
-description: Create, revise, tailor, translate or audit a resume, professional CV or academic CV using Ri-el/resume-builder. Use when a user provides this repository link or requests this format. Establish the document type and constraints, trace candidate claims to sources, use the verified Node generator and report checks honestly.
+description: Create, revise, tailor, translate or audit a resume, professional CV or academic CV using Ri-el/resume-builder. Use when a resume request names Ri-el/resume-builder, links to the repository or requests this format. Use supplied facts and the existing renderer to produce and review a checked PDF when tools permit.
 ---
 
 # Resume Builder
@@ -9,11 +9,9 @@ Use the repository's existing renderer. Prepare content from the candidate's evi
 
 ## Start from a repository link
 
-1. Obtain the complete repository, including `scripts/`, `references/` and `vendor/`. Read [intake and document types](references/intake-and-document-types.md), [content preparation](references/content-preparation.md) and [the verified workflow](references/verified-workflow.md). Reading this file alone does not make the generator available.
-2. Use an authorised GitHub connection, clone the public repository, or download `https://github.com/Ri-el/resume-builder/archive/refs/heads/main.zip`. If downloads are blocked, ask the user to attach that ZIP. Do not ask them to paste individual scripts.
-3. For an authorised revision with a saved approved DOCX, follow the [approved DOCX export](references/verified-workflow.md#routine-edits-to-an-approved-word-layout). For a new PDF without a pixel-match requirement, use [portable mode](references/verified-workflow.md#new-exports-with-installed-libreoffice) and `--doctor --portable` before attempting dependency setup. If exact reference reproduction is required, use [reference setup](docs/SETUP.md) and `--doctor`. A doctor check only confirms prerequisites. Never claim that a link installs tools or an account-wide skill.
-4. Establish the task, document type, target role, supplied application requirements, page limit, language and output format from the request and sources. Ask only about missing facts or choices that materially block the task. Default to PDF only. Text-only edits and audits do not require document tools or a build.
-5. Distinguish a targeted resume, a professional employment CV and an academic CV. Use the document-type guide to select sections and length. Preserve explicit one-page, layout and bounded-edit instructions. If no candidate information is supplied, ask for an existing resume or career notes and an optional target role.
+1. Use the requested repository revision and the candidate information already available in the conversation. Establish the task and honour existing language, page and layout requirements. Default to PDF for file requests. If evidence is missing, ask for an existing resume or career notes. Ask any essential factual questions together and omit optional unknowns. A vacancy is optional. When the evidence is sufficient, proceed with the requested result in the same turn.
+2. For file builds, use a complete checkout or ZIP of the requested revision, including `scripts/`, `references/` and `vendor/`. Prefer an available checkout or a shallow clone of the public repository. If repository retrieval is blocked, ask for the complete ZIP. Read [intake and document types](references/intake-and-document-types.md), [content preparation](references/content-preparation.md) and the relevant section of [the verified workflow](references/verified-workflow.md). Text-only requests can use the relevant guidance without setting up the renderer.
+3. Choose the export route before building. Use [portable mode](references/verified-workflow.md#new-exports-with-installed-libreoffice) for new PDFs without a pixel-match requirement. Use the [approved DOCX export](references/verified-workflow.md#routine-edits-to-an-approved-word-layout) for edits to an approved Word layout. Use [reference setup](docs/SETUP.md) for exact reference reproduction. Reuse the installed tools. If prerequisites are unclear, run `--doctor --portable` for portable builds or `--doctor` for reference builds. Install only missing prerequisites when the environment supports it.
 
 ## Prepare the content
 
@@ -24,7 +22,7 @@ Use the repository's existing renderer. Prepare content from the candidate's evi
 - Tailor to a job description only where the evidence supports it. Do not hide genuine gaps with keywords. During revisions, change only what the user requested and preserve earlier corrections.
 - Map selected content into the [native JSON contract](vendor/claude-resume-generator/docs/INPUT_FORMAT.md). The sample is fictional and supplies structure, never candidate facts. Keep the complete career record, source notes and evidence outside the renderer input.
 - For assistant-authored file builds, create or update a separate private [evidence ledger](docs/EVIDENCE_FORMAT.md). Cover every candidate text field with matching wording and source references. Use `candidate_reported` for candidate statements; `confirmed` requires actually reviewing the cited evidence. Neither status establishes independent verification. Resolve conflicts or omit optional unknowns before rendering. Never manufacture an evidence source to satisfy a check.
-- Run `python scripts/build_verified_resume.py --check-input --input /absolute/task/candidate.json --evidence /absolute/task/evidence.json` before attempting a PDF. Input validity and evidence coverage do not certify factual truth, layout or ATS behaviour.
+- Supply the ledger with `--evidence` when building. The build validates the input and coverage before rendering. Use `--check-input` for input-only validation. Source coverage checks wording and references. Factual accuracy still needs review against the candidate's evidence.
 
 ## Preserve the layout
 

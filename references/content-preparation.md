@@ -71,9 +71,10 @@ Do not add an invented `schema_version`, employer object, `languages` top-level
 field or other keys from a different generator. Use this package's native input
 contract. Keep the fact ledger and review notes in separate private files.
 For assistant-authored file builds, prepare the separate
-[evidence ledger](../docs/EVIDENCE_FORMAT.md) and validate input and claim coverage
-with `--check-input`. The ledger covers selected candidate wording; the complete
-career record remains separate. Source coverage does not prove factual truth.
+[evidence ledger](../docs/EVIDENCE_FORMAT.md) and pass it to the build with
+`--evidence`. The build validates claim coverage before rendering. Use
+`--check-input` for input-only requests. The ledger covers selected candidate
+wording. Keep the complete career record separate and check facts against it.
 
 ## Check the handoff and final PDF
 
