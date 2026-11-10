@@ -39,6 +39,11 @@ ask to apply only the listed edits. The
 reuses that layout with the installed LibreOffice and checks the exact page count,
 embedded fonts and approved text. Keep those source files private.
 
+For a new PDF without a pixel-match requirement, use
+[portable mode](references/verified-workflow.md#new-exports-with-installed-libreoffice).
+It uses the same Word template with the installed LibreOffice and skips rebuilding
+the fictional reference. The PDF still goes through text, font and page checks.
+
 ## Layout
 
 A4, one column, black text and grey dates/company lines. A 16 pt name, 10.5 pt section headings, 10 pt body and 9.5 pt headline/contact/dates keep the page compact. Entries use right-aligned dates and round bullets. There are no photos, tables, icons, skill bars or watermarks in the supported layout.

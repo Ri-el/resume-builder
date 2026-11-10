@@ -75,6 +75,15 @@ reference environment. On macOS, Windows or another Linux distribution, prefer
 the Linux Docker image rather than expecting the installed Word converter to
 produce the same result.
 
+## Build with the installed LibreOffice
+
+When exact reference reproduction is unnecessary, use
+[portable mode](../references/verified-workflow.md#new-exports-with-installed-libreoffice).
+Use Node with `docx` 9.6.1, Python, Poppler, the approved fonts and the LibreOffice
+already installed on the machine. `--doctor --portable` checks the required
+programs and the source hashes without rendering. The PDF checks run during
+the build and the report identifies the LibreOffice version used.
+
 ## Re-export a saved Word layout
 
 For an authorised edit to an approved DOCX, use the

@@ -51,6 +51,28 @@ Only after these checks does it release the requested output. Exit 2 and
 reported reason; do not produce an approximation or claim a passing check.
 The fresh export profile prevents stale preferences from changing conversion.
 
+## New exports with installed LibreOffice
+
+Choose this route before building when the job requires the standard template
+and a checked PDF, and pixel-level reference reproduction is unnecessary.
+
+```bash
+python scripts/build_verified_resume.py --doctor --portable
+python scripts/build_verified_resume.py --portable --input private/candidate.json \
+  --evidence private/evidence.json --output private/resume.pdf --qa-dir private/resume-qa
+```
+
+Portable mode uses the installed LibreOffice with the same `docx` 9.6.1 renderer,
+approved font families and page-fitting rules. It skips rebuilding and comparing
+the fictional reference and reuses the renderer's 100 dpi QA images. The PDF
+still has to pass the renderer's layout checks, embed the expected fonts and
+preserve the approved text in layout and raw extraction without extra words.
+Plain extraction is saved for review. The report names the converter and sets
+`reference_comparison: not_checked`. Rendering differences between converter
+versions can affect wrapping and pagination, so inspect each page before delivery.
+Use the default route for exact reference reproduction. A failed check blocks
+release in either mode.
+
 ## Routine edits to an approved Word layout
 
 Use this route only for a saved approved Word source when exporting with the
@@ -95,9 +117,9 @@ ledger is checked for coverage, not authenticity. Builds without it report
 
 Give the public repository link with the start prompt in [README.md](../README.md),
 or select **Resume Builder** if you have installed a copy. Follow [setup](../docs/SETUP.md)
-to obtain the complete repository and required tools. A GitHub link alone cannot
-force every ChatGPT conversation to load or execute a workflow. If the tools,
-fonts or pinned converter cannot be provided, stop and report the limitation.
+to obtain the complete repository and the tools for the selected mode. A GitHub
+link alone cannot force every ChatGPT conversation to load or execute a workflow.
+If the required tools or fonts cannot be provided, stop and report the limitation.
 Do not send private candidate information to public CI to work around a missing
 local environment.
 

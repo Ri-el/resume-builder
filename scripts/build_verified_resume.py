@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build a reference-verified resume or export an approved Word layout."""
+"""Build a checked resume PDF or export an approved Word layout."""
 
 import argparse
 import collections
@@ -179,20 +179,20 @@ def require_pdf_tools():
             raise Blocked("Missing required PDF tool: " + program)
 
 
-def environment(work):
+def environment(work, *, portable=False):
     env = os.environ.copy()
     node = env.get("CODEX_PRIMARY_RUNTIME_NODE") or shutil.which("node")
     office = shutil.which("soffice") or shutil.which("libreoffice")
     if not node or not office:
-        raise Blocked("Node and LibreOffice 24.2.7.2 are required; no alternative renderer will be used")
+        raise Blocked("Node and LibreOffice are required")
     require_pdf_tools()
     if env.get("CODEX_PRIMARY_RUNTIME_NODE_MODULES"):
         env["NODE_PATH"] = env["CODEX_PRIMARY_RUNTIME_NODE_MODULES"] + os.pathsep + env.get("NODE_PATH", "")
     check = "const fs=require('fs'),p=require('path');let d=p.dirname(require.resolve('docx'));while(!fs.existsSync(p.join(d,'package.json')))d=p.dirname(d);console.log(JSON.parse(fs.readFileSync(p.join(d,'package.json'),'utf8')).version)"
     if run([node, "-e", check], env=env, cwd=UPSTREAM).strip() != "9.6.1":
         raise Blocked("The supplied method requires docx 9.6.1")
-    version = run([office, "--version"], env=env).strip()
-    if not re.search(r"\b24\.2\.7\.2\b", version):
+    version = run([office, "--version"], env=env, timeout=5).strip()
+    if not portable and not re.search(r"\b24\.2\.7\.2\b", version):
         raise Blocked("Reference converter unavailable: need LibreOffice 24.2.7.2; found " + version)
     # Isolate the export profile without changing the supplied script or PDF settings.
     bin_dir = work / "bin"
@@ -255,22 +255,24 @@ def norm(value):
     return re.sub(r"\s+", " ", unicodedata.normalize("NFKC", value)).strip()
 
 
-def check_content(pdf, fragments, qa, env, target_pages=1, *, approved_layout=False):
+def check_content(pdf, fragments, qa, env, target_pages=1, *, approved_layout=False, portable=False):
+    check_export = approved_layout or portable
     expected = collections.Counter(re.findall(r"\w+", norm(" ".join(fragments)).casefold()))
     for name, flags in (("plain", []), ("layout", ["-layout"]), ("raw", ["-raw"])):
         value = run(["pdftotext", *flags, str(pdf), "-"], env=env)
         (qa / (name + ".txt")).write_text(value)
-        if approved_layout:
+        if check_export:
             # Plain extraction can delete a visible hyphen at a wrap. Require both
             # other extraction modes to preserve it, removing only the line break.
             if name == "plain":
                 continue
             value = re.sub(r"(?<=\w)-[ \t]*\r?\n[ \t]*(?=\w)", "-", value)
-        actual = collections.Counter(re.findall(r"\w+", norm(value).casefold()))
-        if any(norm(fragment) not in norm(value) for fragment in fragments) or expected - actual:
+        extracted = norm(value)
+        actual = collections.Counter(re.findall(r"\w+", extracted.casefold()))
+        if any(norm(fragment) not in extracted for fragment in fragments) or expected - actual:
             raise Blocked("Complete text preservation failed in " + name + " extraction")
-        if approved_layout and actual - expected:
-            raise Blocked("Unexpected or duplicated text in approved DOCX " + name + " extraction")
+        if check_export and actual - expected:
+            raise Blocked("Unexpected or duplicated text in " + name + " extraction")
     fonts = run(["pdffonts", str(pdf)], env=env)
     (qa / "fonts.txt").write_text(fonts)
     rows = [line for line in fonts.splitlines()[2:] if line.strip()]
@@ -287,10 +289,16 @@ def check_content(pdf, fragments, qa, env, target_pages=1, *, approved_layout=Fa
     pages = int(match[1])
     if approved_layout and pages != target_pages:
         raise Blocked(f"Approved DOCX must retain {target_pages} pages; export produced {pages}")
-    run(["pdftoppm", "-png", "-r", "150", str(pdf), str(qa / "page")], env=env)
-    images = list(qa.glob("page-*.png"))
+    # The vendored builder already rasterises every page at 100 dpi.
+    image_prefix = f"{pdf.stem}_page" if portable else "page"
+    if not portable:
+        run(["pdftoppm", "-png", "-r", "150", str(pdf), str(qa / image_prefix)], env=env)
+    images = list(qa.glob(f"{image_prefix}-*.png"))
     if len(images) != pages or any(image.stat().st_size == 0 for image in images):
         raise Blocked("Every PDF page must have a non-empty QA image")
+    if portable:
+        for image in images:
+            image.rename(qa / ("page" + image.name.removeprefix(image_prefix)))
     return pages
 
 
@@ -309,8 +317,11 @@ def main(argv=None):
     parser.add_argument("--also-docx", action="store_true")
     parser.add_argument("--overwrite", action="store_true")
     parser.add_argument("--target-pages", type=positive_int, help="Maximum allowed pages (default 1); exact page count with --approved-docx")
-    parser.add_argument("--approved-docx", type=Path,
-                        help="Export an already-edited approved DOCX with installed LibreOffice; requires --input and --target-pages, skips reference comparison")
+    exporters = parser.add_mutually_exclusive_group()
+    exporters.add_argument("--approved-docx", type=Path,
+                           help="Export an already-edited approved DOCX with installed LibreOffice; requires --input and --target-pages, skips reference comparison")
+    exporters.add_argument("--portable", action="store_true",
+                           help="Build new PDFs with installed LibreOffice, skipping reference comparison; also works with --doctor")
     parser.add_argument("--evidence", type=Path, help="Optional private claim ledger; all candidate text must be covered when supplied")
     modes = parser.add_mutually_exclusive_group()
     modes.add_argument("--self-test", action="store_true")
@@ -319,8 +330,10 @@ def main(argv=None):
     args = parser.parse_args(argv)
     released = []
     try:
+        if args.portable and (args.self_test or args.check_input):
+            raise Blocked("Use --portable with a new build or --doctor")
         if (args.self_test or args.doctor) and any((args.input, args.output, args.qa_dir, args.evidence, args.also_docx, args.overwrite, args.target_pages is not None, args.approved_docx)):
-            raise Blocked("Use --self-test or --doctor alone; candidate options would be ignored")
+            raise Blocked("Candidate options cannot be used with --self-test or --doctor")
         if args.check_input and (not args.input or any((args.output, args.qa_dir, args.also_docx, args.overwrite, args.target_pages is not None, args.approved_docx))):
             raise Blocked("Use --check-input with --input and optional --evidence only")
         if not any((args.self_test, args.doctor, args.check_input)) and (not args.input or not args.output or not args.qa_dir):
@@ -364,12 +377,17 @@ def main(argv=None):
                 version, log = export_approved_docx(args.approved_docx, folder, work, env)
                 report = {"mode": "approved_docx_export", "engine": "libreoffice", "reference_comparison": "not_checked"}
             else:
-                env, version = environment(work)
+                env, version = environment(work, portable=args.portable)
                 if args.doctor:
-                    print(json.dumps({"status": "ready_for_self_test", "converter": version, "docx_version": "9.6.1",
+                    status = "ready_for_portable_export" if args.portable else "ready_for_self_test"
+                    print(json.dumps({"status": status, "converter": version, "docx_version": "9.6.1",
                                       "source_integrity": "passed", "reference_comparison": "not_checked", "output_released": False}, indent=2))
                     return 0
-                report = {"engine": "node", "docx_version": "9.6.1", "reference_comparison": self_test(work, env)}
+                report = {"engine": "node", "docx_version": "9.6.1"}
+                if args.portable:
+                    report.update({"mode": "portable", "reference_comparison": "not_checked"})
+                else:
+                    report["reference_comparison"] = self_test(work, env)
             report.update({"status": "passed", "converter": version, "visual_inspection": "not_checked", "factual_verification": "not_checked", "reading_order": "not_checked", "ats_validation": "not_checked"})
             if not args.self_test:
                 snapshot = work / "candidate.json"
@@ -382,7 +400,8 @@ def main(argv=None):
                 else:
                     # Render the validated snapshot rather than rereading the original input.
                     log = build(snapshot, folder, env, target_pages=page_limit)
-                    pages = check_content(folder / "Resume.pdf", fragments, folder, env, target_pages=page_limit)
+                    pages = check_content(folder / "Resume.pdf", fragments, folder, env,
+                                          target_pages=page_limit, portable=args.portable)
                     report["fit_style"] = json.loads((folder / "Resume.style_used.json").read_text())
                 (folder / "build.txt").write_text(log)
                 report.update({"output": str(args.output.resolve()), "qa_directory": str(args.qa_dir.resolve()), "full_text_fragments": len(fragments), "expected_font": "Carlito (Calibri requested by source)", "page_count": pages, "target_pages": page_limit, "input_sha256": hashlib.sha256(snapshot.read_bytes()).hexdigest(), "evidence_validation": evidence})

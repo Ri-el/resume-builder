@@ -52,6 +52,26 @@ class VerifiedTests(unittest.TestCase):
 
 @unittest.skipUnless(os.environ.get("RESUME_RUN_CLAUDE_TESTS") == "1", "Requires the reference renderer environment")
 class VerifiedRenderTests(unittest.TestCase):
+    def test_portable_build_uses_renderer_images_without_rebuilding_reference(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            output = Path(tmp) / "resume.pdf"
+            qa = Path(tmp) / "qa"
+            log = io.StringIO()
+            with contextlib.redirect_stdout(log), mock.patch.object(
+                verified, "self_test", side_effect=AssertionError("Portable mode rebuilt the reference")
+            ):
+                code = verified.main([
+                    "--portable", "--input", str(verified.UPSTREAM / "input/sample_resume.json"),
+                    "--output", str(output), "--qa-dir", str(qa),
+                ])
+            self.assertEqual(code, 0, log.getvalue())
+            report = json.loads(log.getvalue())
+            self.assertEqual(report["mode"], "portable")
+            self.assertEqual(report["reference_comparison"], "not_checked")
+            self.assertEqual(report["full_text_fragments"], 56)
+            self.assertTrue(output.is_file())
+            self.assertEqual(list(qa.glob("*.png")), [qa / "page-1.png"])
+
     def test_approved_docx_uses_saved_layout_and_requires_exact_page_count(self):
         source = verified.UPSTREAM / "output/Sample_Resume.docx"
         data = verified.UPSTREAM / "input/sample_resume.json"
