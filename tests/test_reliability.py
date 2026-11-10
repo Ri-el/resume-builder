@@ -120,8 +120,10 @@ class ReliabilityTests(unittest.TestCase):
 
     def test_diagnostic_modes_reject_ignored_options(self):
         for args in (("--self-test", "--input", "unused.json"),
+                     ("--self-test", "--portable"),
                      ("--doctor", "--output", "unused.pdf"),
                      ("--doctor", "--target-pages", "2"),
+                     ("--check-input", "--input", "unused.json", "--portable"),
                      ("--check-input", "--input", "unused.json", "--also-docx")):
             with self.subTest(args=args), mock.patch.object(verified, "environment", side_effect=AssertionError("Must not run")):
                 code, report = self.invoke(*args)

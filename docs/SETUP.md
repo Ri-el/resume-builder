@@ -75,13 +75,29 @@ reference environment. On macOS, Windows or another Linux distribution, prefer
 the Linux Docker image rather than expecting the installed Word converter to
 produce the same result.
 
+## Build with the installed LibreOffice
+
+When exact reference reproduction is unnecessary, use
+[portable mode](../references/verified-workflow.md#new-exports-with-installed-libreoffice).
+Use Node with `docx` 9.6.1, Python, Poppler, the approved fonts and the LibreOffice
+already installed on the machine. `--doctor --portable` checks the required
+programs and the source hashes without rendering. The PDF checks run during
+the build and the report identifies the LibreOffice version used.
+
+## Re-export a saved Word layout
+
+For an authorised edit to an approved DOCX, use the
+[approved DOCX export](../references/verified-workflow.md#routine-edits-to-an-approved-word-layout).
+It needs Python, LibreOffice, Poppler and the approved fonts available to the
+converter. A Node installation or the pinned reference converter is not required
+for this route. Review the output on the current machine before using it.
+
 ## Review the result
 
-Before a full build, run `python scripts/build_verified_resume.py --doctor` (or
-`docker run --rm --network none resume-builder --doctor`). It checks source
-integrity and required program/library versions without rendering. A result of
-`ready_for_self_test` does not establish font fidelity; the reference self-test
-still runs during generation. A blocker must be fixed in the reference environment.
+The build checks its own prerequisites. To diagnose an environment separately,
+run `python scripts/build_verified_resume.py --doctor --portable` for a portable
+build or omit `--portable` for a reference build. It checks source integrity
+and required programs without rendering. The actual PDF checks run at build time.
 
 Validate private native input and the separate ledger without Node or LibreOffice:
 
@@ -113,7 +129,7 @@ overflow and orphan headings. The JSON report leaves visual inspection marked
 | --- | --- |
 | No repository download or URL access | Attach the repository ZIP to the chat. |
 | Chat cannot execute code or run Docker | Prepare content in chat, then run the commands on your computer. No PDF was generated in that chat. |
-| Reference converter unavailable | Use the reference environment or Docker. Do not switch converters. |
+| Reference converter unavailable | For reference-verified generation, use the reference environment or Docker. Use the separate approved DOCX route only for authorised revisions with a saved Word layout. |
 | Reference DOCX or PDF differs | Check tools, fonts and unmodified source. Do not edit the reference to make it pass. |
 | Required list is empty | Supply a truthful headline/contact item or required section; do not invent one. |
 | Evidence is missing, stale or references an unknown source | Reconcile the native input and private ledger against actual supplied sources; rerun `--check-input`. |

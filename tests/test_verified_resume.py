@@ -52,6 +52,58 @@ class VerifiedTests(unittest.TestCase):
 
 @unittest.skipUnless(os.environ.get("RESUME_RUN_CLAUDE_TESTS") == "1", "Requires the reference renderer environment")
 class VerifiedRenderTests(unittest.TestCase):
+    def test_portable_build_uses_renderer_images_without_rebuilding_reference(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            output = Path(tmp) / "resume.pdf"
+            qa = Path(tmp) / "qa"
+            log = io.StringIO()
+            with contextlib.redirect_stdout(log), mock.patch.object(
+                verified, "self_test", side_effect=AssertionError("Portable mode rebuilt the reference")
+            ):
+                code = verified.main([
+                    "--portable", "--input", str(verified.UPSTREAM / "input/sample_resume.json"),
+                    "--output", str(output), "--qa-dir", str(qa),
+                ])
+            self.assertEqual(code, 0, log.getvalue())
+            report = json.loads(log.getvalue())
+            self.assertEqual(report["mode"], "portable")
+            self.assertEqual(report["reference_comparison"], "not_checked")
+            self.assertEqual(report["full_text_fragments"], 56)
+            self.assertTrue(output.is_file())
+            self.assertEqual(list(qa.glob("*.png")), [qa / "page-1.png"])
+
+    def test_approved_docx_uses_saved_layout_and_requires_exact_page_count(self):
+        source = verified.UPSTREAM / "output/Sample_Resume.docx"
+        data = verified.UPSTREAM / "input/sample_resume.json"
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            original = source.read_bytes()
+            for page_count, expected_code in ((1, 0), (2, 2)):
+                output = root / f"resume-{page_count}.pdf"
+                qa = root / f"qa-{page_count}"
+                log = io.StringIO()
+                with contextlib.redirect_stdout(log), mock.patch.object(
+                    verified, "self_test", side_effect=AssertionError("Approved export rebuilt the reference")
+                ):
+                    code = verified.main([
+                        "--approved-docx", str(source), "--input", str(data),
+                        "--target-pages", str(page_count), "--output", str(output),
+                        "--qa-dir", str(qa), "--also-docx",
+                    ])
+                self.assertEqual(code, expected_code, log.getvalue())
+                report = json.loads(log.getvalue())
+                if code == 0:
+                    self.assertEqual(report["reference_comparison"], "not_checked")
+                    self.assertEqual(report["page_count"], 1)
+                    self.assertTrue(output.is_file())
+                    self.assertTrue((qa / "page-1.png").is_file())
+                    self.assertEqual(output.with_suffix(".docx").read_bytes(), original)
+                else:
+                    self.assertIn("retain 2 pages", report["reason"])
+                    self.assertFalse(output.exists())
+                    self.assertFalse(qa.exists())
+            self.assertEqual(source.read_bytes(), original)
+
     def test_requested_two_page_cv_uses_original_style_and_preserves_all_content(self):
         with tempfile.TemporaryDirectory() as tmp:
             source = Path(tmp) / "academic.json"

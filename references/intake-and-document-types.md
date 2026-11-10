@@ -67,7 +67,8 @@ them as keywords. Do not infer management, expertise or outcomes from a title al
 | Capability | Available work | Do not claim |
 | --- | --- | --- |
 | Text and source access only | Intake, drafting, tailoring, translation and a limited content audit | A generated file, visual review or parser result |
-| File/code tools without the reference converter | Native JSON and evidence validation with `--check-input` | A verified PDF |
+| File/code tools without the required renderer | Native JSON and evidence validation with `--check-input` | A generated PDF |
+| Portable dependencies and repository files | Checked PDF generation with `--portable` | Pixel-level reference reproduction |
 | Reference dependencies and repository files | `--doctor`, `--self-test` and verified file generation | That dependency detection alone reproduces the reference |
 | Page-image access | Inspect all generated pages and report observed issues | That unread pages were inspected |
 

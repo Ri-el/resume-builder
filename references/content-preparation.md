@@ -13,30 +13,54 @@ and [generation procedure](claude-generation.md) before building a file.
 2. Separate confirmed facts, candidate-reported facts and missing or conflicting
    information. Ask about material conflicts. Omit optional unknowns; never fill
    gaps using a job description, sample JSON, this repository or another person's CV.
-3. If a vacancy is supplied, map its requirements to direct, transferable, partial
-   or absent evidence. Tailor only where the candidate has a truthful basis.
-4. Preserve official titles, organisation names and qualifications exactly. Do not
+3. Preserve official titles, organisation names and qualifications exactly. Do not
    infer an awarded degree from examination results or a future ceremony date.
    Keep any clarification about completion separate from the resume itself.
-5. Treat team totals, audience sizes and personal results as different facts. A
+4. Treat team totals, audience sizes and personal results as different facts. A
    moderator for a community of 5,000 members did not manage 5,000 employees.
 
-## Write and select the content
+## Select evidence for the role
+
+1. Identify the vacancy's required qualifications and main responsibilities before
+   its preferences. Match each to direct, transferable, partial or absent evidence.
+   With a career goal and no vacancy, select the strongest facts for that goal.
+2. Put the strongest relevant evidence early. Within a role, lead with its most
+   relevant work or result. Use projects, volunteering and coursework where they
+   provide better evidence, and label each experience accurately.
+3. Use the vacancy's terminology where it accurately describes the work. Include
+   evidenced tools and qualifications by their proper names. Keep missing
+   requirements that matter to the application in a brief note outside the resume.
+4. For a new draft with limited space, remove repetition and lower-priority detail
+   before cutting stronger evidence. Keep bounded edits within the user's request
+   and retain the approved page limit and layout.
+
+## Write the headline and bullets
 
 - Use the requested spelling convention, defaulting to British spelling for new
-  prose, without altering official names or titles.
-- Use a short factual headline and summary supported by the later entries.
-- Write bullets as action, object or scope, and supported method or purpose.
-  Include an outcome only when the evidence supports it. Never invent numbers.
-- Avoid em dashes, generic hype, "responsible for", "helped with", "passionate",
-  "dynamic", "results-driven" and "hardworking" in new resume prose.
-- Prefer "Handled" for volumes of tasks or enquiries. Use "Managed" or "Led"
-  only where the candidate actually owned the function or supervised people.
-- For an initial draft, prioritise relevant evidence and keep the selection
-  explainable. During a bounded revision, change only the requested content.
-  Do not delete previously approved content to make a page fit.
-- Preserve a one-page or same-format instruction across later revisions. Do not
-  change typography, margins, tab stops or line spacing to improve wording.
+  prose. Keep the headline factual and relevant. Add a short summary if it
+  explains the candidate's fit or career direction beyond the headline and bullets.
+- Start each bullet with a specific action. Name what the candidate worked on and
+  add the method, scope, purpose or supported outcome that makes it relevant.
+  When results are unknown, describe the work and why it mattered using the facts
+  available. Preserve each metric's unit, time period and attribution.
+- Prefer "Handled" for task or enquiry volumes. Use "Managed" or "Led" only when
+  the evidence shows ownership or leadership. Avoid em dashes and generic claims
+  such as "results-driven", "responsible for" and "helped with".
+
+### Fictional example
+
+The vacancy requires email campaign reporting and prefers paid search experience.
+The candidate was a Campaign Assistant who reviewed Mailchimp delivery and click
+reports each week and flagged delivery issues for the campaign lead. Their notes
+also mention tracking office supplies. They supplied no paid search experience
+or evidence that delivery rates improved.
+
+| Generic bullet | Specific bullet |
+| --- | --- |
+| Helped with email marketing. | Reviewed weekly Mailchimp delivery and click reports and flagged delivery issues for the campaign lead. |
+
+Lead with the reporting bullet under Campaign Assistant. Leave paid search out
+of the skills list and mention the gap separately. See [Harvard's resume guide](https://careerservices.fas.harvard.edu/resources/create-a-strong-resume/) and [MIT's guide to experience bullets](https://capd.mit.edu/resources/resumes-writing-about-your-skills/).
 
 ## Map facts into the existing fields
 
@@ -71,15 +95,18 @@ Do not add an invented `schema_version`, employer object, `languages` top-level
 field or other keys from a different generator. Use this package's native input
 contract. Keep the fact ledger and review notes in separate private files.
 For assistant-authored file builds, prepare the separate
-[evidence ledger](../docs/EVIDENCE_FORMAT.md) and validate input and claim coverage
-with `--check-input`. The ledger covers selected candidate wording; the complete
-career record remains separate. Source coverage does not prove factual truth.
+[evidence ledger](../docs/EVIDENCE_FORMAT.md) and pass it to the build with
+`--evidence`. The build validates claim coverage before rendering. Use
+`--check-input` for input-only requests. The ledger covers selected candidate
+wording. Keep the complete career record separate and check facts against it.
 
 ## Check the handoff and final PDF
 
-1. Read the complete JSON back against the source evidence. Verify every headline
-   and contact item, date, institution, skill item and bullet, including duplicate
-   text that must appear in more than one place.
+1. Read the draft as a quick scan for the target role. Check that the headline,
+   section headings and leading bullets make the strongest supported qualifications
+   easy to find. Then verify every headline and contact item, date, institution,
+   skill item and bullet in the JSON against the source evidence, including
+   details that appear more than once.
 2. Run the verified entry point in a fresh private output directory with the
    ledger supplied through `--evidence`. Set `--target-pages N` for a selected
    multipage CV, respecting the requested maximum. Follow its

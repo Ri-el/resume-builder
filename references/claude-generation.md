@@ -17,9 +17,10 @@ reference, not independent proof about that private document.
 ## Supported route
 
 Use [the verified entry point](verified-workflow.md). It selects the Node engine
-explicitly and enforces the reference before every candidate build. The source
-package retains other scripts for provenance; its Python port and photo extension
-are not supported delivery routes.
+for native JSON builds. Strict builds reproduce the reference before rendering
+the candidate. Portable builds use the installed converter and check the actual
+candidate PDF. The package retains the Python port and photo extension for
+provenance.
 
 The reference stack is `docx` 9.6.1, LibreOffice 24.2.7.2, Carlito 1.104 and
 Liberation Serif 2.1.5. Different font releases or converters can change wrapping
