@@ -51,6 +51,16 @@
       ]
     },
     {
+      "id": "select-and-write-relevant-experience",
+      "prompt": "Tailor my resume text for a Service Desk Analyst vacancy that requires ticket triage and prefers Linux troubleshooting. I was an IT Support Intern at Fictional Library Co. from 2023 to 2024. I filed purchase receipts and used Jira Service Management to sort 20 to 30 help requests each week by urgency and route them to a technician. I have never used Linux and have no response-time data. Give me a short headline, my role with one bullet, and a separate note about any gap. Text only.",
+      "criteria": [
+        "Uses the single bullet for ticket triage, leaving out the less relevant receipt filing.",
+        "Preserves IT Support Intern, the employer name and the supplied year precision.",
+        "Describes the actual work in Jira Service Management and retains the weekly range without inventing ticket resolution or faster response times.",
+        "Keeps Linux out of candidate claims and identifies it in the separate gap note."
+      ]
+    },
+    {
       "id": "limited-audit-evidence",
       "prompt": "Audit this pasted resume text: Sample Candidate. Results-driven professional. Operations Assistant at Fictional Retail Co., 2021–2023. Responsible for various tasks. Skills: hardworking. No source records, original DOCX, PDF, or page images are available. Tell me the highest-impact issues.",
       "criteria": [
